@@ -1,0 +1,47 @@
+name: Node.js CI
+
+# Trigger which git action (push, pull_request)
+# in which branch(es) should start the jobs...
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# jobs to run
+jobs:
+  # build, the name of the job, a server to create and auto configure
+  endpoint-tests:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      # only testing on Node 18 now but could have done
+      # several builds by adding [16.x, 18.x] etc
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      # action from github marketplace, actions
+      # checkout this repo on the server
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      # action from github marketplace, actions
+      # install Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+      # npm ci ≈ read-only from package.json version
+      # of npm install -> installs all npm modules
+      # mentioned in package.json, preferably during CI
+    - run: npm ci
+      # start up the backend server
+      # (the needs to run if we should be able 
+      #  perform endpoint-testing)
+      # run with nohup (no hangup) in order to 
+      # not block the terminal so we can still run test
+    - run: nohup node backend/index.js &
+      # run whatever is specified in package.json
+      # for the script test
+    - run: npm test

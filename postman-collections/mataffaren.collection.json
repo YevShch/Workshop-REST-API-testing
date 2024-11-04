@@ -1,0 +1,189 @@
+{
+  "info": {
+    "_postman_id": "f9189376-b6f1-46ca-ac12-e6db00ad1bca",
+    "name": "Tests of Mataffären",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "30881265"
+  },
+  "item": [
+    {
+      "name": "Get categories",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Get the data from the response unpacked from json",
+              "let responseData = pm.response.json();",
+              "",
+              "// Check that the status code is 200 (OK)",
+              "pm.test('The status code of the response should be 200', () => {",
+              "  pm.expect(pm.response).to.have.status(200);",
+              "});",
+              "",
+              "// Check that we have a response time of < 1 second",
+              "pm.test('The response time should be below 1 second', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+              "})",
+              "",
+              "// Check that there are at least 10 main categories (children)",
+              "pm.test('There should be at least 10 main categories', () => {",
+              "  pm.expect(responseData.children.length).to.be.at.least(10);",
+              "});",
+              "",
+              "// Check that each main category has the properites title and url",
+              "pm.test('Each main category should have the properties title and url', () => {",
+              "    for(let category of responseData.children){",
+              "        // an empty string is falsy -> convert to false using !!",
+              "        // a string with content is truthy -> convert to true using !!",
+              "        pm.expect(!!category.title).to.be.true;",
+              "        pm.expect(!!category.url).to.be.true;",
+              "        // check that datatype is string for both title and url",
+              "        pm.expect(category.title).to.be.string;",
+              "        pm.expect(category.url).to.be.string;",
+              "    }",
+              "});",
+              "",
+              "// Save the responseData as an environment variable",
+              "pm.variables.set('categoryData', responseData);",
+              "",
+              "// A counter for products within a main category to fecth",
+              "pm.variables.set('categoryCounter', 0);"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Set the domain",
+              "pm.environment.set('domain', 'http://localhost:4000')"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{domain}}/api/leftMenu/categorytree",
+          "host": [
+            "{{domain}}"
+          ],
+          "path": [
+            "api",
+            "leftMenu",
+            "categorytree"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get productlist within category",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// Unpack from JSON all the categories",
+              "let categories = pm.variables.get('categoryData');",
+              "// Get the category counter and convert to number (using +)",
+              "let categoryCounter = pm.variables.get('categoryCounter');",
+              "",
+              "// Get the category part of the url and set it as an environment variable",
+              "let urlCategoryPart = categories.children[categoryCounter].url;",
+              "pm.environment.set('urlCategoryPart',urlCategoryPart);",
+              "",
+              "// Add 1 to the categoryCounter environment variable",
+              "pm.variables.set('categoryCounter', categoryCounter + 1);"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "// Unpack from JSON all the categories",
+              "let categories = pm.variables.get('categoryData');",
+              "// Get the category counter and convert to number (using +)",
+              "let categoryCounter = pm.variables.get('categoryCounter');",
+              "",
+              "// Tests",
+              "",
+              "// Check that the status code is 200 (OK)",
+              "pm.test('The status code of the response should be 200', () => {",
+              "  pm.response.to.have.status(200);",
+              "});",
+              "",
+              "// Check that we have a response time of < 1 second",
+              "pm.test('The response time should be below 1 second', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(1000);",
+              "});",
+              "",
+              "// Check that we have at least one product in the this main category",
+              "let responseData = pm.response.json();",
+              "pm.test('There should be at least one product in a main category', () => {",
+              "    pm.expect(responseData.results.length).to.be.at.least(1);",
+              "});",
+              "",
+              "",
+              "// Repeat/loop this request until we have requested all main categories",
+              "if(categories.children[categoryCounter]){",
+              "  // Repeat this request (with new variable data for the url)",
+              "  pm.execution.setNextRequest('Get productlist within category');",
+              "}",
+              ""
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=30&page=0&sort=topRated",
+          "host": [
+            "{{domain}}"
+          ],
+          "path": [
+            "api",
+            "c",
+            "{{urlCategoryPart}}"
+          ],
+          "query": [
+            {
+              "key": "size",
+              "value": "30"
+            },
+            {
+              "key": "page",
+              "value": "0"
+            },
+            {
+              "key": "sort",
+              "value": "topRated"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

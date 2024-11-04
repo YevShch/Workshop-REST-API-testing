@@ -1,0 +1,115 @@
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.leftMenu {
+  position: fixed;
+  top: 16px;
+  height: calc(100vh - 20px);
+  padding-right: 30px;
+  overflow: scroll;
+}
+
+.leftMenu div {
+  margin: 5px 0 0 20px;
+}
+
+.leftMenu div button {
+  display: inline-block;
+  margin-left: 20px;
+  padding: 0 10px;
+  position: relative;
+  top: -8px;
+  width: 40px;
+}
+
+.leftMenu div a {
+  display: inline-block;
+  width: 180px;
+  color: #000;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.leftMenu a.active {
+  color: #680a0a;
+  font-weight: bold;
+}
+
+.leftMenu div div a {
+  width: 160px;
+}
+
+.leftMenu div div div a {
+  width: 140px;
+}
+
+.categoryList,
+.product-details {
+  position: absolute;
+  left: 350px;
+  top: 0;
+  width: calc(100vw - 380px);
+}
+
+.product-details {
+  top: 5px;
+}
+
+.categoryList img {
+  position: absolute;
+  right: 20px;
+  height: 80px;
+}
+
+.categoryList .product {
+  cursor: pointer;
+  border-bottom: 1px solid #999;
+}
+
+.categoryList .product:hover h3 {
+  color: #680a0a;
+}
+
+.product-details img {
+  margin-top: 20px;
+  object-fit: contain;
+  height: 200px;
+  width: 100%;
+  border: 1px solid #999;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+select {
+  display: inline-block;
+  padding: 3px 5px;
+  margin-left: 10px;
+}
+
+input[type="number"] {
+  width: 50px;
+  text-align: center;
+}
+
+.sortLabel {
+  float: right;
+}
+
+.sortAndPageField {
+  position: sticky;
+  padding: 19px 0 5px 0;
+  top: 0;
+  background-color: white;
+  z-index: 1;
+}
