@@ -22,7 +22,7 @@ Make sure Node.js is installed, then install all required packages.
 
 ```bash
 
-npm 
+npm install
 ```
 **3. Start the Application**
 To start the Mataffären application locally:
