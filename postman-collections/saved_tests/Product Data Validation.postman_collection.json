@@ -1,0 +1,400 @@
+{
+	"info": {
+		"_postman_id": "a4b8c2d0-fce4-4186-bcbb-b75e063293bf",
+		"name": "Product Data Validation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33841208"
+	},
+	"item": [
+		{
+			"name": "Get categories",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Get the data from the response unpacked from json",
+							"let responseData = pm.response.json();",
+							"",
+							"// Check that the status code is 200 (OK)",
+							"pm.test('The status code of the response should be 200', () => {",
+							"  pm.expect(pm.response).to.have.status(200);",
+							"});",
+							"",
+							"// Check that we have a response time of < 1 second",
+							"pm.test('The response time should be below 1 second', () => {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"})",
+							"",
+							"// Check that there are at least 10 main categories (children)",
+							"pm.test('There should be at least 10 main categories', () => {",
+							"  pm.expect(responseData.children.length).to.be.at.least(10);",
+							"});",
+							"",
+							"// Check that each main category has the properites title and url",
+							"pm.test('Each main category should have the properties title and url', () => {",
+							"    for(let category of responseData.children){",
+							"        // an empty string is falsy -> convert to false using !!",
+							"        // a string with content is truthy -> convert to true using !!",
+							"        pm.expect(!!category.title).to.be.true;",
+							"        pm.expect(!!category.url).to.be.true;",
+							"        // check that datatype is string for both title and url",
+							"        pm.expect(category.title).to.be.string;",
+							"        pm.expect(category.url).to.be.string;",
+							"    }",
+							"});",
+							"",
+							"// Save the responseData as an environment variable",
+							"pm.environment.set('categoryData', responseData);",
+							"",
+							"// A counter for products within a main category to fecth",
+							"pm.variables.set('categoryCounter', 0);",
+							"",
+							"pm.variables.set('subCategoryCounter', 0);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Set the domain",
+							"pm.environment.set('domain', 'http://localhost:4000');"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/api/leftMenu/categorytree",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"leftMenu",
+						"categorytree"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Product Data Validation in Subcategories",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Get the category tree from environment variables\r",
+							"let categories = pm.environment.get('categoryData');\r",
+							"\r",
+							"// Get the current main category and subcategory indices\r",
+							"let categoryCounter = pm.environment.get('categoryCounter');\r",
+							"let subCategoryCounter = pm.environment.get('subCategoryCounter');\r",
+							"\r",
+							"// Check if the current main category exists\r",
+							"let currentCategory = categories.children[categoryCounter];\r",
+							"\r",
+							"// Check if there are subcategories within the current main category\r",
+							"if (currentCategory && currentCategory.children && subCategoryCounter < currentCategory.children.length) {\r",
+							"    // Set the subcategory URL for the current request\r",
+							"    let subCategory = currentCategory.children[subCategoryCounter];\r",
+							"    pm.environment.set('urlCategoryPart', subCategory.url);\r",
+							"    \r",
+							"    // Log for debugging\r",
+							"    console.log('Current Main Category: ', currentCategory.title);\r",
+							"    console.log('Current Subcategory: ', subCategory.title);\r",
+							"    \r",
+							"} else if (categories.children[categoryCounter + 1]) {\r",
+							"    // If no more subcategories, move to the next main category\r",
+							"    pm.environment.set('categoryCounter', categoryCounter + 1);\r",
+							"    pm.environment.set('subCategoryCounter', 0); // Reset subcategory\r",
+							"    // Set URL for the new main category\r",
+							"    pm.environment.set('urlCategoryPart', categories.children[categoryCounter + 1].url);\r",
+							"} else {\r",
+							"    console.log('All categories and subcategories have been processed.');\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Retrieve JSON data with all categories from the environment\r",
+							"let categories = pm.environment.get('categoryData');\r",
+							"\r",
+							"// Get the current main and subcategory counters\r",
+							"let categoryCounter = pm.environment.get('categoryCounter') || 0;\r",
+							"let subCategoryCounter = pm.environment.get('subCategoryCounter') || 0;\r",
+							"\r",
+							"// Retrieve the current main category and subcategory\r",
+							"let currentMainCategory = categories.children[categoryCounter];\r",
+							"let currentSubCategory = currentMainCategory?.children[subCategoryCounter];\r",
+							"\r",
+							"// Check if the current main category or subcategory does not exist\r",
+							"if (!currentMainCategory) {\r",
+							"    console.log(\"All categories processed.\");\r",
+							"    pm.environment.unset('categoryCounter');\r",
+							"    pm.environment.unset('subCategoryCounter');\r",
+							"    pm.environment.unset('urlCategoryPart');\r",
+							"    return;\r",
+							"} \r",
+							"\r",
+							"if (!currentSubCategory) {\r",
+							"    // If there is no subcategory, move to the next main category\r",
+							"    categoryCounter++;\r",
+							"    subCategoryCounter = 0;\r",
+							"    currentMainCategory = categories.children[categoryCounter];\r",
+							"    currentSubCategory = currentMainCategory?.children[subCategoryCounter];\r",
+							"    if (!currentMainCategory) {\r",
+							"        console.log(\"All categories processed.\");\r",
+							"        pm.environment.unset('categoryCounter');\r",
+							"        pm.environment.unset('subCategoryCounter');\r",
+							"        pm.environment.unset('urlCategoryPart');\r",
+							"        return;\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"// Logs for the current main category and subcategory\r",
+							"console.log('Current Main Category:', currentMainCategory.title);\r",
+							"console.log('Current Subcategory:', currentSubCategory ? currentSubCategory.title : \"No subcategories\");\r",
+							"\r",
+							"// Set the URL for the subcategory or main category (if there are no subcategories)\r",
+							"let urlCategoryPart = currentSubCategory ? currentSubCategory.url : currentMainCategory.url;\r",
+							"pm.environment.set('urlCategoryPart', urlCategoryPart);\r",
+							"\r",
+							"// Response tests\r",
+							"\r",
+							"// Check that the response status is 200 (OK)\r",
+							"pm.test('The status code of the response should be 200', () => {\r",
+							"  pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check that the response time is below 1 second\r",
+							"pm.test('The response time should be below 1 second', () => {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+							"});\r",
+							"\r",
+							"// Check that there is at least one product in the current category\r",
+							"let responseData = pm.response.json();\r",
+							"pm.test('There should be at least one product in this category', () => {\r",
+							"    pm.expect(responseData.results.length).to.be.at.least(1);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Extended product validation checks\r",
+							"responseData.results.forEach( ( product, index ) => {\r",
+							"  // Check for mandatory fields in each product\r",
+							"  pm.test(`Product ${ index + 1 } should contain mandatory fields and correctly structure`, () => {\r",
+							"    pm.expect( product ).to.have.property( 'name' );\r",
+							"    pm.expect( product ).to.have.property( 'price' );\r",
+							"    pm.expect( product ).to.have.property( 'priceValue' );\r",
+							"    pm.expect( product ).to.have.property( 'code' );\r",
+							"    pm.expect( product ).to.have.property( 'image' );\r",
+							"    pm.expect( product ).to.have.property( 'thumbnail' );\r",
+							"    // Validate data types for each product\r",
+							"    pm.expect( product.name ).to.be.a( 'string' );\r",
+							"    pm.expect( product.price ).to.be.a( 'string' );\r",
+							"    pm.expect( product.priceValue ).to.be.a( 'number' );\r",
+							"    pm.expect( product.code ).to.be.a( 'string' );\r",
+							"    pm.expect( product.online ).to.be.a( 'boolean' );\r",
+							"    pm.expect( product.outOfStock ).to.be.a( 'boolean' );\r",
+							"    // Check the structure of 'image' and 'thumbnail' objects\r",
+							"    pm.expect( product.image ).to.be.an( 'object' );\r",
+							"    pm.expect( product.image ).to.have.property( 'url' ).that.is.a( 'string' );\r",
+							"    pm.expect( product.image ).to.have.property( 'imageType' ).that.is.a( 'string' );\r",
+							"    pm.expect( product.thumbnail ).to.be.an( 'object' );\r",
+							"    pm.expect( product.thumbnail ).to.have.property( 'url' ).that.is.a( 'string' );\r",
+							"\r",
+							"    // Validate the 'labels' array contains only strings\r",
+							"      if ( product.labels ) {\r",
+							"        pm.expect( product.labels ).to.be.an( 'array' );\r",
+							"        product.labels.forEach( label => pm.expect( label ).to.be.a( 'string' ) );\r",
+							"      }\r",
+							"  })\r",
+							"} );\r",
+							"// Logic to move to the next subcategory or main category\r",
+							"\r",
+							"if (currentSubCategory && subCategoryCounter < currentMainCategory.children.length - 1) {\r",
+							"    // If there are remaining subcategories, increment subCategoryCounter\r",
+							"    pm.environment.set('subCategoryCounter', subCategoryCounter + 1);\r",
+							"} else {\r",
+							"    // Move to the next main category if subcategories are finished\r",
+							"    pm.environment.set('categoryCounter', categoryCounter + 1);\r",
+							"    pm.environment.set('subCategoryCounter', 0); // Reset subcategory counter\r",
+							"}\r",
+							"\r",
+							"// Repeat the request\r",
+							"pm.execution.setNextRequest('Product Data Validation in Subcategories');\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=100&page=0&sort=topRated",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"c",
+						"{{urlCategoryPart}}"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "100"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "sort",
+							"value": "topRated"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Product Page Data Validation",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// URL to get products from the category\r",
+							"let categoryUrl = `${pm.environment.get('domain')}/api/c/kott-chark-och-fagel?size=30`;\r",
+							"\r",
+							"// Check if there is a saved list of products\r",
+							"let productsOfCategory = pm.environment.get('productsOfCategory');\r",
+							"let productCounter = pm.environment.get('productCounter') || 0;\r",
+							"\r",
+							"// If the list of products has not been loaded yet, make a request and save it\r",
+							"if (!productsOfCategory) {\r",
+							"    pm.sendRequest({\r",
+							"        url: categoryUrl,\r",
+							"        method: 'GET'\r",
+							"    }, function (err, res) {\r",
+							"        if (!err) {\r",
+							"            let responseData = res.json();\r",
+							"            let products = responseData.results || [];\r",
+							"            \r",
+							"            // Save data of all products in the environment\r",
+							"            pm.environment.set('productsOfCategory', JSON.stringify(products));\r",
+							"            pm.environment.set('productCounter', 0); // Start from the first product\r",
+							"\r",
+							"            if (products.length > 0) {\r",
+							"                // Set the first productCode\r",
+							"                pm.environment.set('productCode', products[0].code);\r",
+							"            } else {\r",
+							"                console.log(\"No products found in the category.\");\r",
+							"            }\r",
+							"        }\r",
+							"    });\r",
+							"} else {\r",
+							"    // Load the saved list of products and the current productCode\r",
+							"    productsOfCategory = JSON.parse(productsOfCategory);\r",
+							"    \r",
+							"    if (productCounter < productsOfCategory.length) {\r",
+							"        let productCode = productsOfCategory[productCounter].code;\r",
+							"        pm.environment.set('productCode', productCode);\r",
+							"    } else {\r",
+							"        console.log(\"All products have been processed.\");\r",
+							"        \r",
+							"        // Clear variables after completion\r",
+							"        pm.environment.unset('productsOfCategory');\r",
+							"        pm.environment.unset('productCounter');\r",
+							"        pm.environment.unset('productCode');\r",
+							"    }\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Testing for the presence of image and name\r",
+							"let responseData = pm.response.json();\r",
+							"\r",
+							"// Check for the presence of an image and URL as a string\r",
+							"pm.test(\"Response should contain an image with a URL\", () => {\r",
+							"    pm.expect(responseData.thumbnail).to.be.an(\"object\");\r",
+							"    pm.expect(responseData.thumbnail.url).to.be.a(\"string\");\r",
+							"    pm.expect(responseData.thumbnail.url).to.match(/^https?:\\/\\/.+$/); // URL validation\r",
+							"});\r",
+							"\r",
+							"// Check that name exists and is a string\r",
+							"pm.test(\"Response should contain a name as a string\", () => {\r",
+							"    pm.expect(responseData.name).to.be.a(\"string\");\r",
+							"});\r",
+							"\r",
+							"// Move to the next product\r",
+							"let productCounter = pm.environment.get('productCounter');\r",
+							"let productsOfCategory = JSON.parse(pm.environment.get('productsOfCategory'));\r",
+							"\r",
+							"if (productCounter < productsOfCategory.length - 1) {\r",
+							"    // Update the counter for the next product\r",
+							"    pm.environment.set('productCounter', ++productCounter);\r",
+							"    let nextProductCode = productsOfCategory[productCounter].code;\r",
+							"    pm.environment.set('productCode', nextProductCode);\r",
+							"    pm.execution.setNextRequest('Product Page Data Validation');\r",
+							"} else {\r",
+							"    console.log(\"All products have been processed.\");\r",
+							"    \r",
+							"    // Clear variables after completion\r",
+							"    pm.environment.unset('productsOfCategory');\r",
+							"    pm.environment.unset('productCounter');\r",
+							"    pm.environment.unset('productCode');\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/api/axfood/rest/p/{{productCode}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"axfood",
+						"rest",
+						"p",
+						"{{productCode}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

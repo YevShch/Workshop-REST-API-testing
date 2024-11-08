@@ -9,7 +9,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "newman run postman-collections/*"
+    "test": "newman run postman-collections/mataffaren.collection.json"
   },
   "dependencies": {
     "concurrently": "^8.0.1",

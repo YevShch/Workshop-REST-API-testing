@@ -1,0 +1,302 @@
+{
+	"info": {
+		"_postman_id": "e764a18a-67ac-43b5-bb37-bdffd1e51785",
+		"name": "Mataffären Sortering",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33841208"
+	},
+	"item": [
+		{
+			"name": "1 Verify Products Sorted by Top Rated",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();\r",
+							"\r",
+							"// Ensure the response contains products\r",
+							"pm.test('Response should contain products', () => {\r",
+							"    pm.expect(responseData.results.length).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"// Verify that the sort parameter is set to \"topRated\"\r",
+							"pm.test('Sort parameter should be set to topRated', () => {\r",
+							"    pm.expect(responseData.pagination.sort).to.eql('topRated');\r",
+							"});\r",
+							"\r",
+							"// Validate sorting by 'ranking' field (assuming descending order indicates higher rating)\r",
+							"let products = responseData.results;\r",
+							"\r",
+							"// Test that products are sorted by ranking in descending order\r",
+							"pm.test('Products should be sorted by top rating (ranking in descending order)', () => {\r",
+							"    for (let i = 0; i < products.length - 1; i++) {\r",
+							"        let currentRanking = products[i].ranking;\r",
+							"        let nextRanking = products[i + 1].ranking;\r",
+							"        pm.expect(currentRanking).to.be.at.least(nextRanking, `Product at index ${i} has a higher ranking than product at index ${i + 1}`);\r",
+							"    }\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set('domain', 'http://localhost:4000');"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/api/c/kott-chark-och-fagel?size=30&page=0&sort=topRated",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"c",
+						"kott-chark-och-fagel"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "30"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "sort",
+							"value": "topRated"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2 Verify Products Sorted by Top Rated",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"if (!pm.environment.get(\"pageNumber\")) {\r",
+							"    pm.environment.set(\"pageNumber\", 0);\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();\r",
+							"let products = responseData.results;\r",
+							"\r",
+							"// Check that the sort parameter is set to \"topRated\"\r",
+							"pm.test('Sort parameter should be set to topRated', () => {\r",
+							"    pm.expect(responseData.pagination.sort).to.eql('topRated');\r",
+							"});\r",
+							"\r",
+							"// Check that products are sorted by the \"ranking\" field in descending order\r",
+							"pm.test('Products should be sorted by top rating (ranking in descending order)', () => {\r",
+							"    for (let i = 0; i < products.length - 1; i++) {\r",
+							"        let currentRanking = products[i].ranking;\r",
+							"        let nextRanking = products[i + 1].ranking;\r",
+							"        pm.expect(currentRanking).to.be.at.least(nextRanking, `Product at index ${i} has a higher ranking than product at index ${i + 1}`);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Check for the existence of the next page and move to it if available\r",
+							"let currentPage = pm.environment.get(\"pageNumber\");\r",
+							"let totalPages = responseData.pagination.numberOfPages;\r",
+							"\r",
+							"if (currentPage < totalPages - 1) {\r",
+							"    // If next page exists, increase pageNumber and set next request\r",
+							"    pm.environment.set(\"pageNumber\", currentPage + 1);\r",
+							"    pm.execution.setNextRequest(\"2 Verify Products Sorted by Top Rated\");\r",
+							"} else {\r",
+							"    // If it's the last page, reset pageNumber and finish\r",
+							"    console.log(\"All pages in this category have been processed.\");\r",
+							"    pm.environment.unset(\"pageNumber\");\r",
+							"    pm.execution.setNextRequest(null); // Stops the iteration\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/api/c/kott-chark-och-fagel?size=30&page={{pageNumber}}&sort=topRated",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"c",
+						"kott-chark-och-fagel"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "30"
+						},
+						{
+							"key": "page",
+							"value": "{{pageNumber}}"
+						},
+						{
+							"key": "sort",
+							"value": "topRated"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3  Verify Products Sorted by Top Rated",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let categories = pm.variables.get('categoryData');\r",
+							"console.log('Categories:', categories);\r",
+							"// Get the category counter and convert to number (using +)\r",
+							"\r",
+							"// let categoryCounter = 0;\r",
+							"// pm.variables.set('categoryCounter', categoryCounter); \r",
+							"\r",
+							"let categoryCounter = pm.variables.get('categoryCounter');\r",
+							"if (categoryCounter === undefined) {\r",
+							"    categoryCounter = 0; \r",
+							"    pm.variables.set('categoryCounter', categoryCounter); \r",
+							"}\r",
+							"console.log('Category Counter:', categoryCounter);\r",
+							"\r",
+							"\r",
+							"\r",
+							"// Get the category part of the url and set it as an environment variable\r",
+							"let urlCategoryPart = categories.children[categoryCounter].url;\r",
+							"pm.environment.set('urlCategoryPart',urlCategoryPart);\r",
+							"\r",
+							"// Add 1 to the categoryCounter environment variable\r",
+							"pm.variables.set('categoryCounter', categoryCounter + 1);\r",
+							"\r",
+							"if (!pm.environment.get(\"pageNumber\")) {\r",
+							"    pm.environment.set(\"pageNumber\", 0);\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();\r",
+							"let products = responseData.results;\r",
+							"let categories = pm.variables.get('categoryData');\r",
+							"\r",
+							"// Get the category counter and convert to number\r",
+							"let categoryCounter = pm.variables.get('categoryCounter');\r",
+							"\r",
+							"// Check that the sort parameter is set to \"topRated\"\r",
+							"pm.test('Sort parameter should be set to topRated', () => {\r",
+							"    pm.expect(responseData.pagination.sort).to.eql('topRated');\r",
+							"});\r",
+							"\r",
+							"// Check that products are sorted by the \"ranking\" field in descending order\r",
+							"pm.test('Products should be sorted by top rating (ranking in descending order)', () => {\r",
+							"    for (let i = 0; i < products.length - 1; i++) {\r",
+							"        let currentRanking = products[i].ranking;\r",
+							"        let nextRanking = products[i + 1].ranking;\r",
+							"        pm.expect(currentRanking).to.be.at.least(nextRanking, `Product at index ${i} has a higher ranking than product at index ${i + 1}`);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"// Check for the existence of the next page and move to it if available\r",
+							"let currentPage = pm.environment.get(\"pageNumber\");\r",
+							"let totalPages = responseData.pagination.numberOfPages;\r",
+							"\r",
+							"\r",
+							"if (currentPage < totalPages - 1) {\r",
+							"    // If next page exists, increase pageNumber and set next request to the same category\r",
+							"    pm.environment.set(\"pageNumber\", currentPage += 1);\r",
+							"    pm.execution.setNextRequest(\"3 Verify Products Sorted by Top Rated\");\r",
+							"} else {\r",
+							"    // If it's the last page of this category, reset pageNumber and switch to the next category\r",
+							"    console.log(\"All pages in this category have been processed.\");\r",
+							"    pm.environment.unset(\"pageNumber\"); // Reset page number for the new category\r",
+							"    \r",
+							"    // If there are more categories, go to the next one\r",
+							"    if (categories.children[categoryCounter]) {\r",
+							"        console.log(\"Switching to the next category...\");\r",
+							"        pm.variables.set('categoryCounter', categoryCounter += 1);\r",
+							"        pm.execution.setNextRequest('3 Verify Products Sorted by Top Rated');  // Request the next category\r",
+							"    } else {\r",
+							"        // If there are no more categories, end the test\r",
+							"        console.log(\"All categories have been processed.\");\r",
+							"        pm.execution.setNextRequest(null);  // End the iteration\r",
+							"    }\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=30&page={{pageNumber}}&sort=topRated",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"c",
+						"{{urlCategoryPart}}"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "30"
+						},
+						{
+							"key": "page",
+							"value": "{{pageNumber}}"
+						},
+						{
+							"key": "sort",
+							"value": "topRated"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
