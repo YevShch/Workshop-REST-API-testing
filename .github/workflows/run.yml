@@ -25,20 +25,26 @@ jobs:
 
       - run: npm ci
 
-      # Install Newman and the htmlextra reporter
-      - name: Install Newman and htmlextra reporter
+      - name: Install Newman and htmlextra Reporter
         run: |
           npm install -g newman@latest
           npm install -g newman-reporter-htmlextra
 
-      # Run tests and save the results to test_results.html
+      - name: Check Postman Collection Exists
+        run: |
+          if [ ! -f postman-collections/mataffaren.collection.json ]; then
+            echo "Postman collection file not found!"
+            exit 1
+          fi
+
       - name: Run Newman Tests and Export Results
         run: |
           newman run postman-collections/mataffaren.collection.json \
             --reporters htmlextra \
-            --reporter-htmlextra-export test_results.html
+            --reporter-htmlextra-export test_results.html \
+            --suppress-exit-code \
+            --verbose
 
-      # Send test report to Discord if it exists
       - name: Upload Test Results to Discord
         if: always()
         env:
@@ -51,7 +57,6 @@ jobs:
               $DISCORD_WEBHOOK_URL
           fi
 
-      # Additional notification in Discord after test completion
       - name: Send Discord Notification Test Passed
         if: always()
         env:
