@@ -23,20 +23,20 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      - run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
       - name: Install Newman and htmlextra Reporter
         run: |
           npm install -g newman@latest
           npm install -g newman-reporter-htmlextra
 
-      - name: Check Postman Collection Exists
+      # Start the backend server in the background
+      - name: Start Backend Server
         run: |
-          if [ ! -f postman-collections/mataffaren.collection.json ]; then
-            echo "Postman collection file not found!"
-            exit 1
-          fi
+          nohup node backend/index.js &
 
+      # Run Newman tests after the backend is up
       - name: Run Newman Tests and Export Results
         run: |
           newman run postman-collections/mataffaren.collection.json \
@@ -57,7 +57,7 @@ jobs:
               $DISCORD_WEBHOOK_URL
           fi
 
-      - name: Send Discord Notification Test Passed
+      - name: Send Discord Notification Test Completed
         if: always()
         env:
           DISCORD_WEBHOOK_URL: https://discordapp.com/api/webhooks/1226464109680263219/cfAUULyxtqG79ydcUXW_5oeZKcFu6E7PeFiik8-b3R_GFjLVlnJOcU9Y8rClh0jgl5po
