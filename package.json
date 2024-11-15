@@ -9,7 +9,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "newman run postman-collections/mataffaren.collection.json"
+    "test": "node makePrecompile.js && cucumber-js __temp --import tests/features/support --import tests/features/step-definitions  --format summary --fail-fast",
+    "newman-test": "newman run postman-collections/mataffaren.collection.json",
+    "make-steps": "node makeSteps.cjs"
   },
   "dependencies": {
     "concurrently": "^8.0.1",
@@ -20,9 +22,13 @@
     "react-router-dom": "^6.10.0"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^11.0.1",
+    "@qavajs/console-formatter": "^0.8.0",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react": "^3.1.0",
+    "chai": "^5.1.2",
+    "chalk": "^5.3.0",
     "newman": "^6.2.1",
     "vite": "^4.2.0"
   }
