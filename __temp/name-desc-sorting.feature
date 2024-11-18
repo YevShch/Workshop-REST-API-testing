@@ -1,37 +1,37 @@
-Feature: Product Page Data Validation
-As an API consumer,
-I want to validate the product data for a specific product
-So that I can ensure the API returns the correct product details.
+Feature: Feature: Product Sorting by Name descending
+  As a REST-API endpoint consumer, I want to test sorting of products by "name-desc"
+  to ensure the API provides accurate sorting functionality.
 
   Background:
     Given that I am on the domain "http://localhost:4000"
 
-  # Scenario: Get a list of all categories
-  #   When I visit the endpoint "GET" "/api/leftMenu/categorytree"
-  #   Then the status code of the response should be 200
-  #   And the response time should be below 1000 milliseconds
-  #   And there should be at least 10 main categories
-
-   Scenario: Visiting a category
-    When I visit the endpoint "GET" "/api/c/kott-chark-och-fagel/fagel?size=30&page=0&sort=topRated"
+  Scenario: Get a list of all categories
+    When I visit the endpoint "GET" "/api/leftMenu/categorytree"
     Then the status code of the response should be 200
     And the response time should be below 1000 milliseconds
-    And there should be at least 1 product in the category
-    And each product should have a code in the response
-    # api/c/kott-chark-och-fagel/fagel?page=0&size=30&sort=topRated
-    # Examples:
-    #   | {dynamic: 'categoryUrlParts'} |
+    And there should be at least 500 categories
 
-
-  Scenario Outline: Validate product page data for a specific product
-    Given I visit the endpoint "GET" "/api/axfood/rest/p/{productCode}"
+  Scenario: Check that the sort parameter is set to "name-desc"
+    When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=name-desc"
     Then the status code of the response should be 200
     And the response time should be below 1000 milliseconds
-    And the response should contain an "image" with a "url"
-    And the response should contain a "name" as a "string"
+    And the sort parameter in the response should be "name-desc"
+
+  Scenario: Check that products are sorted by "name-desc" (Z-A)
+    When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=name-desc"
+    Then the status code of the response should be 200
+    And the response time should be below 1000 milliseconds
+    And the products in the response should be sorted by name in descending order
+
+  Scenario Outline: Verify sorting in multiple categories
+    When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=name-desc"
+    Then the status code of the response should be 200
+    And the response time should be below 1000 milliseconds
+    And the sort parameter in the response should be "name-desc"
+    And the products in the response should be sorted by name in descending order
 
     Examples:
-       | productCodes |
+       | categoryUrlParts |
        |  |
        |  |
        |  |

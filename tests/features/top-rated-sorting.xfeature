@@ -23,7 +23,7 @@ Feature: Feature: Product Sorting by Top Rating
     And the response time should be below 1000 milliseconds
     And the products in the response should be sorted by "ranking" in descending order
 
-  Scenario Outline: Verify sorting in multiple categories
+  Scenario Outline: Verify sorting by top ranking in multiple categories
     When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=topRated"
     Then the status code of the response should be 200
     And the response time should be below 1000 milliseconds
