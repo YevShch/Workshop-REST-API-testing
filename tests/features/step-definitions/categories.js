@@ -6,7 +6,8 @@ Given('that I am on the domain {string}', async function (urlPrefix) {
 });
 
 When('I visit the endpoint {string} {string}', async function (method, url) {
-  await this.fetch(url, { method });
+  await this.fetch( url, { method } );
+  console.log("URL ", url)
   // console.log('response:', this.response, '\nresponseTime:', this.responseTime, '\njson:', this.json);
 });
 
