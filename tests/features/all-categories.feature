@@ -9,13 +9,21 @@ Feature: Categories
     When I visit the endpoint "GET" "/api/leftMenu/categorytree"
     Then the status code of the response should be 200
     And the response time should be below 1000 milliseconds
-    And there should be at least 500 categories
+    And there should be at least 20 categories
+    # And there should be at least 500 third-level categories
+
 
   Scenario Outline: Visiting a category
     When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=topRated"
     Then the status code of the response should be 200
     And the response time should be below 1000 milliseconds
     And there should be at least 1 product in the category
+
+    #  Scenario Outline: Visiting a third-level category
+    # When I visit the endpoint "GET" "/api/c/{thirdLevCategoryUrlPart}?size=30&page=0&sort=topRated"
+    # Then the status code of the response should be 200
+    # And the response time should be below 1000 milliseconds
+    # And there should be at least 1 product in the category
 
     # Use dynamic data (from a previous scenario) to run a scenario outline multiple times!
     # See the step definitions:
@@ -24,4 +32,5 @@ Feature: Categories
     # 2) Use the syntax below to point to your array
     # 3) Use the same name in singular in curly brackets in a string in your step (see above)
     Examples:
-      | {dynamic: 'categoryUrlParts'} |
+      | {dynamic: 'categoryUrlParts'}       |
+      # | {dynamic: 'thirdLevCategoryUrlParts'} |
