@@ -30,7 +30,7 @@ jobs:
       run: |
         nohup node backend/index.js &
         sleep 10 
-        npx newman run postman-collections/Category-levels.postman_collection.json
+        npx newman run postman-collections/Categories.postman_collection.json
 
     - name: Run backend and test Subcategories collection
       run: |
