@@ -28,18 +28,27 @@ jobs:
     # Step to run the backend before running each Postman collection
     - name: Run backend and test Category-levels collection
       run: |
+        if lsof -i :4000; then
+          lsof -ti :4000 | xargs kill -9
+        fi
         nohup node backend/index.js &
         sleep 10 
         npx newman run postman-collections/Categories.postman_collection.json
 
     - name: Run backend and test Subcategories collection
       run: |
+        if lsof -i :4000; then
+          lsof -ti :4000 | xargs kill -9
+        fi
         nohup node backend/index.js &
         sleep 10
         npx newman run postman-collections/Subcategories.postman_collection.json
 
     - name: Run backend and test Third-level-categories collection
       run: |
+        if lsof -i :4000; then
+          lsof -ti :4000 | xargs kill -9
+        fi
         nohup node backend/index.js &
         sleep 10
         npx newman run postman-collections/Third_level_categories.postman_collection.json
