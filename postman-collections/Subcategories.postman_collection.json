@@ -7,6 +7,85 @@
 	},
 	"item": [
 		{
+			"name": "Get categories",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Get the data from the response unpacked from json",
+							"let responseData = pm.response.json();",
+							"",
+							"// Check that the status code is 200 (OK)",
+							"pm.test('The status code of the response should be 200', () => {",
+							"  pm.expect(pm.response).to.have.status(200);",
+							"});",
+							"",
+							"// Check that we have a response time of < 1 second",
+							"pm.test('The response time should be below 1 second', () => {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"})",
+							"",
+							"// Check that there are at least 10 main categories (children)",
+							"pm.test('There should be at least 10 main categories', () => {",
+							"  pm.expect(responseData.children.length).to.be.at.least(10);",
+							"});",
+							"",
+							"// Check that each main category has the properites title and url",
+							"pm.test('Each main category should have the properties title and url', () => {",
+							"    for(let category of responseData.children){",
+							"        // an empty string is falsy -> convert to false using !!",
+							"        // a string with content is truthy -> convert to true using !!",
+							"        pm.expect(!!category.title).to.be.true;",
+							"        pm.expect(!!category.url).to.be.true;",
+							"        // check that datatype is string for both title and url",
+							"        pm.expect(category.title).to.be.string;",
+							"        pm.expect(category.url).to.be.string;",
+							"    }",
+							"});",
+							"",
+							"// Save the responseData as an environment variable",
+							"pm.environment.set('categoryData', responseData);",
+							"",
+							"// A counter for products within a main category to fecth",
+							"pm.variables.set('categoryCounter', 0);",
+							"",
+							"pm.variables.set('subCategoryCounter', 0);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Set the domain",
+							"pm.environment.set('domain', 'http://localhost:4000');"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/api/leftMenu/categorytree",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"leftMenu",
+						"categorytree"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get product list within subcategory",
 			"event": [
 				{
