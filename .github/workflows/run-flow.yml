@@ -26,6 +26,15 @@ jobs:
     - run: npm ci
 
     # Step to run the backend before running each Postman collection
+    - name: Run backend and test Product Data Validation collection
+      run: |
+        if lsof -i :4000; then
+          lsof -ti :4000 | xargs kill -9
+        fi
+        nohup node backend/index.js &
+        sleep 10 
+        npx newman run postman-collections/Product_Data_Validation.postman_collection.json
+        
     - name: Run backend and test Category-levels collection
       run: |
         if lsof -i :4000; then
@@ -52,15 +61,6 @@ jobs:
         nohup node backend/index.js &
         sleep 10
         npx newman run postman-collections/Pagination.postman_collection.json
-
-    - name: Run backend and test Product Data Validation collection
-      run: |
-        if lsof -i :4000; then
-          lsof -ti :4000 | xargs kill -9
-        fi
-        nohup node backend/index.js &
-        sleep 10 
-        npx newman run postman-collections/Product_Data_Validation.postman_collection.json
 
     - name: Run backend and test Sorting collection
       run: |
