@@ -7,7 +7,7 @@
 	},
 	"item": [
 		{
-			"name": "Get categories Copy",
+			"name": "Get categories",
 			"event": [
 				{
 					"listen": "test",
@@ -86,7 +86,7 @@
 			"response": []
 		},
 		{
-			"name": "Get Product List by Category with Custom Page Size",
+			"name": "Product List and Pagination Validation",
 			"event": [
 				{
 					"listen": "prerequest",
@@ -140,21 +140,28 @@
 							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
 							"});",
 							"",
-							"// Test that there is at least one product in the main category",
+							"// Parse the response data",
 							"let responseData = pm.response.json();",
-							"pm.test('There should be at least one product in a main category', () => {",
-							"    pm.expect(responseData.results.length).to.be.at.least(1);",
-							"});",
 							"",
-							"// Test for exact product count on the page",
+							"// Test that there is the expected number of products on the page",
 							"pm.test(`There should be exactly ${pm.variables.get('pageSize')} products on the page`, () => {",
+							"    pm.expect(responseData.results).to.be.an('array');",
 							"    pm.expect(responseData.results.length).to.eql(pm.variables.get('pageSize'));",
 							"});",
 							"",
+							"// Validate pagination data if it exists",
+							"pm.test('Pagination data should be valid', () => {",
+							"    pm.expect(responseData.pagination).to.be.an('object'); // Ensure pagination data exists",
+							"    pm.expect(responseData.pagination.pageSize).to.eql(pm.variables.get('pageSize'));",
+							"    pm.expect(responseData.pagination.currentPage).to.be.a('number');",
+							"    pm.expect(responseData.pagination.numberOfPages).to.be.above(0);",
+							"    pm.expect(responseData.pagination.totalNumberOfResults).to.be.a('number');",
+							"    pm.expect(responseData.pagination.totalNumberOfResults).to.be.above(0);",
+							"});",
 							"// Check if we should proceed with the next category",
 							"if (categories.children && categories.children[categoryCounter]) {",
 							"    // Set up the next request with the updated URL part",
-							"    pm.execution.setNextRequest('Get Product List by Category with Custom Page Size');",
+							"    pm.execution.setNextRequest('Product List and Pagination Validation');",
 							"} else {",
 							"    console.log('All categories have been processed.');",
 							"    pm.environment.unset('categoryCounter'); // Clear the counter if finished",
@@ -204,129 +211,6 @@
 						{
 							"key": "sort",
 							"value": "topRated"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Product Pagination Test with Constant Page Size of 10",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"// Get JSON response\r",
-							"let responseData = pm.response.json();\r",
-							"\r",
-							"// Check response status\r",
-							"pm.test('The status code of the response should be 200', () => {\r",
-							"    pm.expect(pm.response).to.have.status(200);\r",
-							"});\r",
-							"\r",
-							"// Check response time\r",
-							"pm.test('The response time should be below 1 second', () => {\r",
-							"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-							"});\r",
-							"\r",
-							"// Check that there are exactly 10 products on the page\r",
-							"pm.test(`There should be exactly ${pm.environment.get('pageSize')} products on the page`, () => {\r",
-							"    pm.expect(responseData.results.length).to.eql(pm.environment.get('pageSize'));\r",
-							"});\r",
-							"\r",
-							"// Validate pagination data\r",
-							"pm.test('Pagination should show correct page size and current page', () => {\r",
-							"    pm.expect(responseData.pagination.pageSize).to.eql(pm.environment.get('pageSize'));\r",
-							"    pm.expect(responseData.pagination.currentPage).to.be.a('number');\r",
-							"    pm.expect(responseData.pagination.numberOfPages).to.be.above(0);\r",
-							"});\r",
-							"\r",
-							"// Validate that the total number of products matches the pagination data\r",
-							"pm.test('Total number of products should match pagination', () => {\r",
-							"    pm.expect(responseData.pagination.totalNumberOfResults).to.be.a('number');\r",
-							"    pm.expect(responseData.pagination.totalNumberOfResults).to.be.above(0);\r",
-							"});\r",
-							"\r",
-							"// Logic for automatic pagination\r",
-							"let currentPage = Number(pm.environment.get('currentPage')); // Convert to number for correct increment\r",
-							"let numberOfPages = responseData.pagination.numberOfPages; // Total pages\r",
-							"let totalNumberOfResults = responseData.pagination.totalNumberOfResults; // Total number of products\r",
-							"\r",
-							"// If the current page is less than the number of pages, continue\r",
-							"if (currentPage < numberOfPages - 1) {\r",
-							"    pm.environment.set('currentPage', currentPage + 1); // Increment page number\r",
-							"    pm.execution.setNextRequest('Product Pagination Test with Constant Page Size of 10'); // Repeat the request\r",
-							"} else {\r",
-							"    console.log('All pages processed. Total number of products:', totalNumberOfResults);\r",
-							"    pm.environment.unset('currentPage'); // Reset currentPage after processing is complete\r",
-							"}\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				},
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							"let categories = pm.variables.get('categoryData');\r",
-							"\r",
-							"// Get the category counter, and if it's not set, start from 0\r",
-							"let categoryCounter = Number(pm.variables.get('categoryCounter')) || 0;\r",
-							"\r",
-							"// Check if the category exists\r",
-							"if (categories.children && categories.children[categoryCounter]) {\r",
-							"    // Set the category URL part as an environment variable\r",
-							"    let urlCategory = categories.children[categoryCounter].url;\r",
-							"    pm.environment.set('urlCategory', urlCategory);\r",
-							"\r",
-							"    // Increment the category counter for the next request\r",
-							"    pm.variables.set('categoryCounter', categoryCounter + 1);\r",
-							"} else {\r",
-							"    console.log('All categories have been processed.');\r",
-							"    pm.environment.unset('categoryCounter'); // Clear the category counter if all categories are processed\r",
-							"    pm.environment.unset('urlCategory');     // Remove urlCategory to avoid errors\r",
-							"   return;\r",
-							"}\r",
-							"\r",
-							"// Set pagination parameters\r",
-							"pm.environment.set('pageSize', 10);\r",
-							"pm.environment.set('currentPage', Number(pm.environment.get('currentPage')) || 0); // Set page, converting to a number\r",
-							"pm.environment.set('sortOrder', 'name-desc');\r",
-							""
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{domain}}/api/c/{{urlCategory}}?size={{pageSize}}&page={{currentPage}}&sort={{sortOrder}}\n",
-					"host": [
-						"{{domain}}"
-					],
-					"path": [
-						"api",
-						"c",
-						"{{urlCategory}}"
-					],
-					"query": [
-						{
-							"key": "size",
-							"value": "{{pageSize}}"
-						},
-						{
-							"key": "page",
-							"value": "{{currentPage}}"
-						},
-						{
-							"key": "sort",
-							"value": "{{sortOrder}}\n"
 						}
 					]
 				}
