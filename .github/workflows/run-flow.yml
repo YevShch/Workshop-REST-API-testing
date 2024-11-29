@@ -44,11 +44,38 @@ jobs:
         sleep 10
         npx newman run postman-collections/Subcategories.postman_collection.json
 
-    - name: Run backend and test Third-level-categories collection
+    - name: Run backend and test Pagination collection
       run: |
         if lsof -i :4000; then
           lsof -ti :4000 | xargs kill -9
         fi
         nohup node backend/index.js &
         sleep 10
-        npx newman run postman-collections/Third_level_categories.postman_collection.json
+        npx newman run postman-collections/Pagination.postman_collection.json
+
+    - name: Run backend and test Product Data Validation collection
+      run: |
+        if lsof -i :4000; then
+          lsof -ti :4000 | xargs kill -9
+        fi
+        nohup node backend/index.js &
+        sleep 10 
+        npx newman run postman-collections/Product_Data_Validation.postman_collection.json
+
+    - name: Run backend and test Sorting collection
+      run: |
+        if lsof -i :4000; then
+          lsof -ti :4000 | xargs kill -9
+        fi
+        nohup node backend/index.js &
+        sleep 10
+        npx newman run postman-collections/Sorting.postman_collection.json
+
+    # - name: Run backend and test Third-level-categories collection
+    #   run: |
+    #     if lsof -i :4000; then
+    #       lsof -ti :4000 | xargs kill -9
+    #     fi
+    #     nohup node backend/index.js &
+    #     sleep 10
+    #     npx newman run postman-collections/Third_level_categories.postman_collection.json
