@@ -1,0 +1,151 @@
+{
+	"info": {
+		"_postman_id": "c6a91457-51b9-495e-b0f7-ca26660c53b0",
+		"name": "Get product list within hird level categories",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33841208"
+	},
+	"item": [
+		{
+			"name": "Get product list within third-level category",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Retrieve category data and current counters\r",
+							"let categories = pm.environment.get('categoryData');\r",
+							"let categoryCounter = pm.environment.get('categoryCounter') || 0;\r",
+							"let subCategoryCounter = pm.environment.get('subCategoryCounter') || 0;\r",
+							"let thirdLevelCategoryCounter = pm.environment.get('thirdLevelCategoryCounter') || 0;\r",
+							"\r",
+							"// Get current category, subcategory, and third-level category\r",
+							"let mainCat = categories.children[categoryCounter];\r",
+							"let subCat = mainCat?.children[subCategoryCounter];\r",
+							"let thirdCat = subCat?.children[thirdLevelCategoryCounter];\r",
+							"\r",
+							"// Set the URL for the current category or subcategory\r",
+							"let url = thirdCat?.url || subCat?.url || mainCat?.url;\r",
+							"pm.environment.set('urlCategoryPart', url);\r",
+							"\r",
+							"// Log category path\r",
+							"console.log('Current Category Path:', mainCat?.title, '>', subCat?.title, '>', thirdCat?.title);\r",
+							"\r",
+							"// Check if all categories are processed and unset the counters if so\r",
+							"if (!mainCat) {\r",
+							"    console.log('All categories processed.');\r",
+							"    pm.environment.unset('categoryCounter');\r",
+							"    pm.environment.unset('subCategoryCounter');\r",
+							"    pm.environment.unset('thirdLevelCategoryCounter');\r",
+							"    pm.environment.unset('urlCategoryPart');\r",
+							"     return;\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Retrieve category data and current counters\r",
+							"let categories = pm.environment.get('categoryData');\r",
+							"let categoryCounter = pm.environment.get('categoryCounter') || 0;\r",
+							"let subCategoryCounter = pm.environment.get('subCategoryCounter') || 0;\r",
+							"let thirdLevelCategoryCounter = pm.environment.get('thirdLevelCategoryCounter') || 0;\r",
+							"\r",
+							"// Get current category, subcategory, and third-level category\r",
+							"let mainCat = categories.children[categoryCounter];\r",
+							"let subCat = mainCat?.children[subCategoryCounter];\r",
+							"let thirdCat = subCat?.children[thirdLevelCategoryCounter];\r",
+							"\r",
+							"// Check if category exists\r",
+							"if (!mainCat) {\r",
+							"    console.log(\"All categories processed.\");\r",
+							"    pm.environment.unset('categoryCounter');\r",
+							"    pm.environment.unset('subCategoryCounter');\r",
+							"    pm.environment.unset('thirdLevelCategoryCounter');\r",
+							"    pm.environment.unset('urlCategoryPart');\r",
+							"    pm.execution.stop();\r",
+							"    return;\r",
+							"}\r",
+							"\r",
+							"// Set URL for the category\r",
+							"pm.environment.set('urlCategoryPart', thirdCat?.url || subCat?.url || mainCat.url);\r",
+							"\r",
+							"// Response validation\r",
+							"pm.test('The status code of the response should be 200', () => pm.response.to.have.status(200));\r",
+							"pm.test('The response time should be below 1 second', () => pm.expect(pm.response.responseTime).to.be.below(1000));\r",
+							"pm.test('There should be at least one product in this category', () => pm.expect(pm.response.json().results.length).to.be.at.least(1));\r",
+							"\r",
+							"// Move to the next category/subcategory/third-level category\r",
+							"if (thirdCat && thirdLevelCategoryCounter < subCat.children.length - 1) {\r",
+							"    pm.environment.set('thirdLevelCategoryCounter', ++thirdLevelCategoryCounter);\r",
+							"} else if (subCat && subCategoryCounter < mainCat.children.length - 1) {\r",
+							"    pm.environment.set('subCategoryCounter', ++subCategoryCounter);\r",
+							"    pm.environment.set('thirdLevelCategoryCounter', 0);\r",
+							"} else if (categoryCounter < categories.children.length - 1) {\r",
+							"    pm.environment.set('categoryCounter', ++categoryCounter);\r",
+							"    pm.environment.set('subCategoryCounter', 0);\r",
+							"    pm.environment.set('thirdLevelCategoryCounter', 0);\r",
+							"} else {\r",
+							"    console.log(\"All categories processed.\");\r",
+							"    pm.environment.unset('categoryCounter');\r",
+							"    pm.environment.unset('subCategoryCounter');\r",
+							"    pm.environment.unset('thirdLevelCategoryCounter');\r",
+							"    pm.environment.unset('urlCategoryPart');\r",
+							"    return;\r",
+							"}\r",
+							"\r",
+							"// Proceed with the next request\r",
+							"pm.execution.setNextRequest('Get product list within third-level category');\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=30&page=0&sort=topRated",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"c",
+						"{{urlCategoryPart}}"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "30"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "sort",
+							"value": "topRated"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

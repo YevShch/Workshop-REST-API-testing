@@ -1,0 +1,133 @@
+{
+	"info": {
+		"_postman_id": "224a13a4-63ca-4560-b877-902ec58a8b4c",
+		"name": "Subcategories",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33841208"
+	},
+	"item": [
+		{
+			"name": "Get product list within subcategory",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// Retrieve category data and counters\r",
+							"let categories = pm.environment.get('categoryData');\r",
+							"let categoryCounter = pm.environment.get('categoryCounter') || 0;\r",
+							"let subCategoryCounter = pm.environment.get('subCategoryCounter') || 0;\r",
+							"\r",
+							"// Function to get current category based on counters\r",
+							"function getCurrentCategory() {\r",
+							"    let mainCat = categories.children[categoryCounter];\r",
+							"    let subCat = mainCat?.children[subCategoryCounter];\r",
+							"    return { mainCat, subCat };\r",
+							"}\r",
+							"\r",
+							"// Set URL and log current category path\r",
+							"let { mainCat, subCat } = getCurrentCategory();\r",
+							"pm.environment.set('urlCategoryPart', subCat?.url || mainCat?.url);\r",
+							"console.log('Current Main Category:', mainCat?.title, '| Current Subcategory:', subCat?.title);\r",
+							"\r",
+							"// Move to next main category if no subcategories are left\r",
+							"if (!subCat && categories.children[categoryCounter + 1]) {\r",
+							"    pm.environment.set('categoryCounter', categoryCounter + 1);\r",
+							"    pm.environment.set('subCategoryCounter', 0);\r",
+							"    pm.environment.set('urlCategoryPart', categories.children[categoryCounter + 1].url);\r",
+							"} else if (!subCat) {\r",
+							"    console.log('All categories and subcategories have been processed.');\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Retrieve category data and counters\r",
+							"let categories = pm.environment.get('categoryData');\r",
+							"let categoryCounter = pm.environment.get('categoryCounter') || 0;\r",
+							"let subCategoryCounter = pm.environment.get('subCategoryCounter') || 0;\r",
+							"\r",
+							"// Function to get current category based on counters\r",
+							"function getCurrentCategory() {\r",
+							"    let mainCat = categories.children[categoryCounter];\r",
+							"    let subCat = mainCat?.children[subCategoryCounter];\r",
+							"    return { mainCat, subCat };\r",
+							"}\r",
+							"\r",
+							"// Retrieve current categories and set URL\r",
+							"let { mainCat, subCat } = getCurrentCategory();\r",
+							"\r",
+							"// If there are no more categories, clear environment variables\r",
+							"if (!mainCat) {\r",
+							"    console.log(\"All categories processed.\");\r",
+							"    pm.environment.unset('categoryCounter');\r",
+							"    pm.environment.unset('subCategoryCounter');\r",
+							"    pm.environment.unset('urlCategoryPart');\r",
+							"    return;\r",
+							"}\r",
+							"\r",
+							"// Set the URL for the subcategory or main category\r",
+							"pm.environment.set('urlCategoryPart', subCat?.url || mainCat.url);\r",
+							"\r",
+							"// Response tests\r",
+							"pm.test('The status code of the response should be 200', () => pm.response.to.have.status(200));\r",
+							"pm.test('The response time should be below 1 second', () => pm.expect(pm.response.responseTime).to.be.below(1000));\r",
+							"let responseData = pm.response.json();\r",
+							"pm.test('There should be at least one product in this category', () => pm.expect(responseData.results.length).to.be.at.least(1));\r",
+							"\r",
+							"// Update counters for the next request\r",
+							"if (subCat && subCategoryCounter < mainCat.children.length - 1) {\r",
+							"    pm.environment.set('subCategoryCounter', subCategoryCounter + 1);\r",
+							"} else {\r",
+							"    pm.environment.set('categoryCounter', categoryCounter + 1);\r",
+							"    pm.environment.set('subCategoryCounter', 0);\r",
+							"}\r",
+							"\r",
+							"// Repeat the request\r",
+							"pm.execution.setNextRequest('Get product list within subcategory');\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=30&page=0&sort=topRated",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"api",
+						"c",
+						"{{urlCategoryPart}}"
+					],
+					"query": [
+						{
+							"key": "size",
+							"value": "30"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "sort",
+							"value": "topRated"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
