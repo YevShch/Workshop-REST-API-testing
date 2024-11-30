@@ -207,7 +207,7 @@
 			"response": []
 		},
 		{
-			"name": "Product Data Validation in Main Categories (all pages)",
+			"name": "Product Data Validation in Main Categories",
 			"event": [
 				{
 					"listen": "prerequest",
