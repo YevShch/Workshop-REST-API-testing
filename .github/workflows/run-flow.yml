@@ -26,6 +26,17 @@ jobs:
     - run: npm ci
 
     # Step to run the backend before running each Postman collection
+    - name: Run backend and test Sorting by ranking collection
+      run: |
+        if lsof -i :4000; then
+          lsof -ti :4000 | xargs kill -9
+        fi
+        nohup node backend/index.js &
+        npx wait-on tcp:4000
+        npx newman run postman-collections/Sorting_Top_Rated.postman_collection.json
+
+
+
     - name: Run backend and test Product Data Validation collection
       run: |
         if lsof -i :4000; then
