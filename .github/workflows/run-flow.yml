@@ -16,7 +16,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
@@ -62,14 +61,68 @@ jobs:
         sleep 10
         npx newman run postman-collections/Pagination.postman_collection.json
 
-    - name: Run backend and test Sorting collection
+    - name: Run backend and test Sorting by ranking collection
       run: |
         if lsof -i :4000; then
           lsof -ti :4000 | xargs kill -9
         fi
         nohup node backend/index.js &
         sleep 10
-        npx newman run postman-collections/Sorting.postman_collection.json
+        npx newman run postman-collections/Sorting_Top_Rated.postman_collection.json
+
+    - name: Run backend and test Sorting by name-asc collection
+      run: |
+        if lsof -i :4000; then
+          lsof -ti :4000 | xargs kill -9
+        fi
+        nohup node backend/index.js &
+        sleep 10
+        npx newman run postman-collections/Sorting_Name_asc.postman_collection.json
+
+    - name: Run backend and test Sorting by name-desc collection
+      run: |
+        if lsof -i :4000; then
+          lsof -ti :4000 | xargs kill -9
+        fi
+        nohup node backend/index.js &
+        sleep 10
+        npx newman run postman-collections/Sorting_Name_desc.postman_collection.json 
+        
+    # - name: Run backend and test Sorting by price-asc collection
+    #   run: |
+    #     if lsof -i :4000; then
+    #       lsof -ti :4000 | xargs kill -9
+    #     fi
+    #     nohup node backend/index.js &
+    #     sleep 10
+    #     npx newman run postman-collections/Sorting_Price_asc.postman_collection.json 
+
+    # - name: Run backend and test Sorting by price-desc collection
+    #   run: |
+    #     if lsof -i :4000; then
+    #       lsof -ti :4000 | xargs kill -9
+    #     fi
+    #     nohup node backend/index.js &
+    #     sleep 10
+    #     npx newman run postman-collections/Sorting_Price_desc.postman_collection.json 
+
+    # - name: Run backend and test Sorting by compare price-asc collection
+    #   run: |
+    #     if lsof -i :4000; then
+    #       lsof -ti :4000 | xargs kill -9
+    #     fi
+    #     nohup node backend/index.js &
+    #     sleep 10
+    #     npx newman run postman-collections/Sorting_Compare_Price_asc.postman_collection.json
+
+    # - name: Run backend and test Sorting by compare price-desc collection
+    #   run: |
+    #     if lsof -i :4000; then
+    #       lsof -ti :4000 | xargs kill -9
+    #     fi
+    #     nohup node backend/index.js &
+    #     sleep 10
+    #     npx newman run postman-collections/Sorting_Compare_Price_desc.postman_collection.json
 
     # - name: Run backend and test Third-level-categories collection
     #   run: |
