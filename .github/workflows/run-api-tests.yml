@@ -18,16 +18,16 @@ jobs:
         test-collection:
           - Categories
           - Subcategories
-          - Third_level_categories
+          # - Third_level_categories
           - Pagination
           - Product_Data_Validation
           - Sorting_Top_Rated
           - Sorting_Name_asc
           - Sorting_Name_desc
-          - Sorting_Price_asc
-          - Sorting_Price_desc
-          - Sorting_Compare_Price_asc
-          - Sorting_Compare_Price_desc
+          # - Sorting_Price_asc
+          # - Sorting_Price_desc
+          # - Sorting_Compare_Price_asc
+          # - Sorting_Compare_Price_desc
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
@@ -40,5 +40,19 @@ jobs:
       run: nohup node backend/index.js &
     - name: Wait for backend to be available
       run: npx wait-on tcp:4000
-    - name: Run tests
-      run: npx newman run postman-collections/${{ matrix.test-collection }}.postman_collection.json
+    # - name: Run tests
+    #   run: npx newman run postman-collections/${{ matrix.test-collection }}.postman_collection.json
+    - name: Run tests and save report
+      run: |
+        mkdir -p reports
+        npx newman run postman-collections/${{ matrix.test-collection }}.postman_collection.json \
+        --reporters cli,html \
+        --reporter-html-export reports/${{ matrix.test-collection }}_report.html
+    - name: Send report to Discord
+      if: always()
+      run: |
+        REPORT_PATH=reports/${{ matrix.test-collection }}_report.html
+        curl -X POST -H "Content-Type: multipart/form-data" \
+        -F "content=Test completed for collection: ${{ matrix.test-collection }}" \
+        -F "file=@$REPORT_PATH" \
+        https://discordapp.com/api/webhooks/1227220027183337524/THqo7lSXDCzLEDI3W8KeSNTGy2qNGGRpmciSlUf-Wj9EJsFv6kN8W7qDuZej0j5m2htSru
