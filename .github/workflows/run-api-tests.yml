@@ -42,12 +42,12 @@ jobs:
       run: npx wait-on tcp:4000
     # - name: Run tests
     #   run: npx newman run postman-collections/${{ matrix.test-collection }}.postman_collection.json
-    - name: Run tests and save report
+    - name: Run tests and save HTML report with htmlextra
       run: |
         mkdir -p reports
         npx newman run postman-collections/${{ matrix.test-collection }}.postman_collection.json \
-        --reporters cli,html \
-        --reporter-html-export reports/${{ matrix.test-collection }}_report.html
+        --reporters cli,htmlextra \
+        --reporter-htmlextra-export reports/${{ matrix.test-collection }}_report.html
     - name: Send report to Discord
       if: always()
       run: |
