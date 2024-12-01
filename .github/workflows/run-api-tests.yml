@@ -20,7 +20,7 @@ jobs:
           - Subcategories
           - Third_level_categories
           - Pagination
-          - Product-Data-Validation
+          - Product_Data_Validation
           - Sorting_Top_Rated
           - Sorting_Name_asc
           - Sorting_Name_desc
