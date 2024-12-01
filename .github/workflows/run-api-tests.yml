@@ -54,10 +54,14 @@ jobs:
     - name: Send report to Discord
       if: always()
       run: |
-        ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        REPORT_PATH=reports/${{ matrix.test-collection }}_report.html
-        curl -X POST -H "Content-Type: application/json" \
-        -d "{
-          \"content\": \"Test completed for collection: ${{ matrix.test-collection }}. [View artifacts](${ARTIFACT_URL})\"
-        }" \
-        https://discordapp.com/api/webhooks/1227220027183337524/THqo7lSXDCzLEDI3W8KeSNTGy2qNGGRpmciSlUf-Wj9EJsFv6kN8W7qDuZej0j5m2htS
+       ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+       REPORT_PATH=reports/${{ matrix.test-collection }}_report.html
+       curl -X POST -H "Content-Type: multipart/form-data" \
+       -F "content=Test completed for collection: ${{ matrix.test-collection }}. [View artifacts](${ARTIFACT_URL})" \
+       -F "file=@$REPORT_PATH" \
+       https://discordapp.com/api/webhooks/1227220027183337524/THqo7lSXDCzLEDI3W8KeSNTGy2qNGGRpmciSlUf-Wj9EJsFv6kN8W7qDuZej0j5m2htS || \
+       curl -X POST -H "Content-Type: application/json" \
+       -d "{
+        \"content\": \"Test completed for collection: ${{ matrix.test-collection }}. HTML report could not be attached. [View artifacts](${ARTIFACT_URL})\"
+       }" \
+       https://discordapp.com/api/webhooks/1227220027183337524/THqo7lSXDCzLEDI3W8KeSNTGy2qNGGRpmciSlUf-Wj9EJsFv6kN8W7qDuZej0j5m2htS
