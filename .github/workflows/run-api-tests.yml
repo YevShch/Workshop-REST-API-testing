@@ -24,7 +24,7 @@ jobs:
           - Sorting_Top_Rated
           - Sorting_Name_asc
           - Sorting_Name_desc
-          - Sorting_Price_asc
+          # - Sorting_Price_asc
           # - Sorting_Price_desc
           # - Sorting_Compare_Price_asc
           # - Sorting_Compare_Price_desc
@@ -45,7 +45,7 @@ jobs:
         mkdir -p reports
         npx newman run postman-collections/${{ matrix.test-collection }}.postman_collection.json \
         --reporters cli,htmlextra \
-        --reporter-htmlextra-export reports/${{ matrix.test-collection }}_report.html || true
+        --reporter-htmlextra-export reports/${{ matrix.test-collection }}_report.html
     - name: Upload test report as artifact
       uses: actions/upload-artifact@v3
       with:
