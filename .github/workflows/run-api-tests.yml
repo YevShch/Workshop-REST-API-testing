@@ -40,18 +40,24 @@ jobs:
       run: nohup node backend/index.js &
     - name: Wait for backend to be available
       run: npx wait-on tcp:4000
-    # - name: Run tests
     - name: Run tests and save HTML report with htmlextra
       run: |
         mkdir -p reports
         npx newman run postman-collections/${{ matrix.test-collection }}.postman_collection.json \
         --reporters cli,htmlextra \
         --reporter-htmlextra-export reports/${{ matrix.test-collection }}_report.html
+    - name: Upload test report as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.test-collection }}-report
+        path: reports/${{ matrix.test-collection }}_report.html
     - name: Send report to Discord
       if: always()
       run: |
+        ARTIFACT_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
         REPORT_PATH=reports/${{ matrix.test-collection }}_report.html
-        curl -X POST -H "Content-Type: multipart/form-data" \
-        -F "content=Test completed for collection: ${{ matrix.test-collection }}" \
-        -F "file=@$REPORT_PATH" \
+        curl -X POST -H "Content-Type: application/json" \
+        -d "{
+          \"content\": \"Test completed for collection: ${{ matrix.test-collection }}. [View artifacts](${ARTIFACT_URL})\"
+        }" \
         https://discordapp.com/api/webhooks/1227220027183337524/THqo7lSXDCzLEDI3W8KeSNTGy2qNGGRpmciSlUf-Wj9EJsFv6kN8W7qDuZej0j5m2htS
