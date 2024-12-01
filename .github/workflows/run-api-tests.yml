@@ -34,7 +34,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Run Category-levels tests
-      run: npx newman run postman-collections/Category-levels.postman_collection.json
+      run: npx newman run postman-collections/Category.postman_collection.json
 
   test-subcategories:
     needs: start-backend
