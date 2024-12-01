@@ -41,25 +41,17 @@ jobs:
     - name: Wait for backend to be available
       run: npx wait-on tcp:4000
     # - name: Run tests
-    #   run: npx newman run postman-collections/${{ matrix.test-collection }}.postman_collection.json
     - name: Run tests and save HTML report with htmlextra
       run: |
         mkdir -p reports
         npx newman run postman-collections/${{ matrix.test-collection }}.postman_collection.json \
         --reporters cli,htmlextra \
         --reporter-htmlextra-export reports/${{ matrix.test-collection }}_report.html
-    # - name: Send report to Discord
-    #   if: always()
-    #   run: |
-    #     REPORT_PATH=reports/${{ matrix.test-collection }}_report.html
-    #     curl -X POST -H "Content-Type: multipart/form-data" \
-    #     -F "content=Test completed for collection: ${{ matrix.test-collection }}" \
-    #     -F "file=@$REPORT_PATH" \
-    - name: Send compressed report to Discord
+    - name: Send report to Discord
       if: always()
       run: |
-       REPORT_PATH=reports/${{ matrix.test-collection }}_report.zip
-       curl -X POST -H "Content-Type: multipart/form-data" \
-       -F "content=Test completed for collection: ${{ matrix.test-collection }}" \
-       -F "file=@$REPORT_PATH" \
+        REPORT_PATH=reports/${{ matrix.test-collection }}_report.html
+        curl -X POST -H "Content-Type: multipart/form-data" \
+        -F "content=Test completed for collection: ${{ matrix.test-collection }}" \
+        -F "file=@$REPORT_PATH" \
         https://discordapp.com/api/webhooks/1227220027183337524/THqo7lSXDCzLEDI3W8KeSNTGy2qNGGRpmciSlUf-Wj9EJsFv6kN8W7qDuZej0j5m2htS
