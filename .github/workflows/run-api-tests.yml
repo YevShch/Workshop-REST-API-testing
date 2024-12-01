@@ -50,7 +50,7 @@ jobs:
     - name: Run Subcategories tests
       run: npx newman run postman-collections/Subcategories.postman_collection.json
 
-  test-pagination:
+  test-third-level-categories:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -68,4 +68,4 @@ jobs:
     - name: Wait for backend to be available
       run: npx wait-on tcp:4000
     - name: Run Pagination tests
-      run: npx newman run postman-collections/Pagination.postman_collection.json
+      run: npx newman run postman-collections/Third-level-categories.postman_collection.json
