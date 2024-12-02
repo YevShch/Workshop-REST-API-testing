@@ -16,7 +16,7 @@ Then( 'the sort parameter in the response should be {string}', async function ( 
   // expect(sort.selected, `Sort with code '${expectedSort}' is not selected`).to.be.true;
 } );
 
-Then('the products in the response should be sorted by {string} in descending order', async function(a){
+Then('the products in the response should be sorted by {string} in descending order', async function(field){
   const responseData = this.json;
   const products = responseData.results;
 

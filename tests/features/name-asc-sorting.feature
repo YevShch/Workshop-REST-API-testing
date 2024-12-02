@@ -9,19 +9,9 @@ Feature: Feature: Product Sorting by Name ascending
     When I visit the endpoint "GET" "/api/leftMenu/categorytree"
     Then the status code of the response should be 200
     And the response time should be below 1000 milliseconds
-    And there should be at least 500 categories
+    And there should be at least 15 main categories
+    And there should be at least 500 subcategories
 
-  Scenario: Check that the sort parameter is set to "name-asc"
-    When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=name-asc"
-    Then the status code of the response should be 200
-    And the response time should be below 1000 milliseconds
-    And the sort parameter in the response should be "name-asc"
-
-  Scenario: Check that products are sorted by "name-asc" ranking
-    When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=name-asc"
-    Then the status code of the response should be 200
-    And the response time should be below 1000 milliseconds
-    And the products in the response should be sorted by name in ascending order
 
   Scenario Outline: Verify sorting by name ascending in multiple categories
     When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=name-asc"

@@ -9,26 +9,16 @@ Feature: Feature: Product Sorting by compaire Price Descending
     When I visit the endpoint "GET" "/api/leftMenu/categorytree"
     Then the status code of the response should be 200
     And the response time should be below 1000 milliseconds
-    And there should be at least 500 categories
+    And there should be at least 15 main categories
+    And there should be at least 500 subcategories
 
-  Scenario: Check that the sort parameter is set to "compareprice-desc"
+
+  Scenario Outline: Verify sorting by compare price descending in multiple categories
     When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=compareprice-desc"
     Then the status code of the response should be 200
     And the response time should be below 1000 milliseconds
     And the sort parameter in the response should be "compareprice-desc"
-
-  Scenario: Check that products are sorted by "compareprice-desc"
-    When I visit the endpoint "GET" "/api/c/kott-chark-och-fagel?size=30&page=0&sort=compareprice-desc"
-    Then the status code of the response should be 200
-    And the response time should be below 1000 milliseconds
     And the products in the response should be sorted by compare price in descending order
 
-  # Scenario Outline: Verify sorting by compare price descending in multiple categories
-  #   When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=compareprice-desc"
-  #   Then the status code of the response should be 200
-  #   And the response time should be below 1000 milliseconds
-  #   And the sort parameter in the response should be "compareprice-desc"
-  #   And the products in the response should be sorted by compare price in descending order
-
-  #   Examples:
-  #     | {dynamic: 'categoryUrlParts'} |
+     Examples:
+      | {dynamic: 'categoryUrlParts'} |
