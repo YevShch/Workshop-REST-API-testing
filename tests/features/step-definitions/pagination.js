@@ -1,6 +1,16 @@
-import { Then } from '@cucumber/cucumber';
+import { Then, When } from '@cucumber/cucumber';
 import { expect } from 'chai';
 
+
+When('I visit an endpoint {string} {string}',async function ( method, endpointTemplate ) { 
+    const endpoint = endpointTemplate
+      .replace( '<categoryUrlPart>', this.categoryUrlPart ) 
+      .replace( '<currentPage>', this.currentPage ) 
+      .replace( '<pageSize>', this.pageSize ); 
+    await this.fetch( endpoint, { method } );
+    console.log( 'URL:', endpoint );
+  }
+);
 
 
 Then( 'the response should contain exactly {float} products on the page', async function ( expectedPageSize ){
@@ -23,13 +33,24 @@ Then('the pagination data should be valid', async function(){
 });
 
 
-// Then( 'the response should contain the correct number of products {string}', async function ( expectedNumberOfProducts ) {
-//   const responseData = this.json; 
+Then( 'the response should contain the correct number of products {string}', async function ( expectedNumberOfProducts ) {
+  const responseData = this.json; 
 
-//   const expectedCount = parseInt( expectedNumberOfProducts, 10 );
+  const expectedCount = parseInt( expectedNumberOfProducts, 10 );
 
-//   expect( responseData.results.length,
-//     `Expected ${ expectedCount } products, but got ${ responseData.results.length }`
-//   ).to.eql( expectedCount );
-// } );
+  expect( responseData.results.length,
+    `Expected ${ expectedCount } products, but got ${ responseData.results.length }`
+  ).to.eql( expectedCount );
+} );
 
+
+Then('the {string} value in the response should equal {string}',async function ( field, expectedValue ) {
+  const responseData = this.json; 
+  const actualValue = responseData.pagination[ field ]; 
+    if ( actualValue !== parseInt( expectedValue, 10 ) ) {
+      throw new Error(
+        `Expected ${ field } to be ${ expectedValue }, but got ${ actualValue }`
+      );
+    }
+  }
+);

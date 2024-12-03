@@ -14,7 +14,7 @@ and contain all mandatory fields with the correct data types.
 
 
   Scenario: Validate product structure in the response
-    When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=topRated"
+    When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=100&page=0&sort=topRated"
     Then the status code of the response should be 200
     And the response time should be below 1000 milliseconds
     And there should be at least 1 product in the response
@@ -34,3 +34,5 @@ and contain all mandatory fields with the correct data types.
       | imageType | string |
     And product labels, if present, should be arrays of strings
 
+    Examples:
+      | {dynamic: 'categoryUrlParts'} |

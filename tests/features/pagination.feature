@@ -16,15 +16,23 @@ Feature: Validate pagination and product data
     And the pagination data should be valid
 
 
-  # Scenario Outline: Validate pagination and the number of products per page
-  #   When I visit the endpoint "GET" "/api/c/{categoryUrlPart}>?page=0&size=<pageSize>"
-  #   Then the response should contain the correct number of products "<expectedNumberOfProducts>"
+  Scenario Outline: Validate pagination and the number of products per page
+    When I visit an endpoint "GET" "/api/c/<categoryUrlPart>?page=<currentPage>&size=<pageSize>"
+    Then the response should contain the correct number of products "<expectedNumberOfProducts>"
+    And the "currentPage" value in the response should equal "<currentPage>"
 
-  #     | pageSizes | expectedNumberOfProducts |
-  #     | 30        | 30                       |
-  #     | 50        | 50                       |
-  #     | 100       | 100                      |
+    Examples:
+      | categoryUrlPart            | pageSize | currentPage | expectedNumberOfProducts |
+      | frukt-och-gront            | 30       | 0           | 30                       |
+      | kott-chark-och-fagel       | 100      | 1           | 100                      |
+      | kott-chark-och-fagel/fagel | 30       | 2           | 30                       |
+      | mejeri-ost-och-agg         | 10       | 3           | 10                       |
+      | skafferi                   | 20       | 0           | 20                       |
+      | mejeri-ost-och-agg/mjolk   | 30       | 0           | 30                       |
+      | brod-och-kakor             | 100      | 1           | 100                      |
+      | fryst                      | 20       | 4           | 20                       |
+      | fisk-och-skaldjur          | 30       | 0           | 30                       |
+      | vegetariskt                | 30       | 2           | 30                       |
+
+
   
-  #   Examples:
-  #     | {dynamic: 'categoryUrlParts'} |
-   

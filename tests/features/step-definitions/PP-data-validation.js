@@ -1,15 +1,15 @@
 import { Then } from '@cucumber/cucumber';
 import { expect } from 'chai';
 
-Then( 'each product should have a code in the response', async function () {
+Then( 'each product should have a field {string} in the response', async function (field) {
   const responseData = this.json; 
 
   let productCodes = [];
   responseData.results.forEach( ( product, index ) => {
-    expect( product, `Product at index ${ index } is missing the "code" field` ).to.have.property( 'code' );
-    expect( product.code, `Product at index ${ index } has an invalid "code" value` ).to.be.a( 'string' );
+    expect( product, `Product at index ${ index } is missing the "code" field` ).to.have.property( field );
+    expect( product[field], `Product at index ${ index } has an invalid "code" value` ).to.be.a( 'string' );
 
-    productCodes.push( product.code );
+    productCodes.push( product[field] );
   } );
   console.log( 'Collected product codes:', productCodes );
 
