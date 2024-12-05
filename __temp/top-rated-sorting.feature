@@ -14,7 +14,7 @@ Feature: Feature: Product Sorting by Top Rating
 
 
   Scenario Outline: Verify sorting by top ranking in multiple categories
-    When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=topRated"
+    When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=100&page=0&sort=topRated"
     Then the status code of the response should be 200
     And the response time should be below 1000 milliseconds
     And the sort parameter in the response should be "topRated"

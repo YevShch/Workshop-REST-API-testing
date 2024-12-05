@@ -14,7 +14,7 @@ Feature: Feature: Product Sorting by Name ascending
 
 
   Scenario Outline: Verify sorting by name ascending in multiple categories
-    When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=name-asc"
+    When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=100&page=0&sort=name-asc"
     Then the status code of the response should be 200
     And the response time should be below 1000 milliseconds
     And the sort parameter in the response should be "name-asc"

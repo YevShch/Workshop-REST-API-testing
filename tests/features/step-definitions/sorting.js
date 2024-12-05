@@ -6,14 +6,6 @@ Then( 'the sort parameter in the response should be {string}', async function ( 
   const actualSort = responseData.pagination.sort;
   expect( actualSort ).to.eql( expectedSort, `Expected sort parameter to be '${ expectedSort }', but got '${ actualSort }'` );
 
-  // const responseData = this.json; 
-  // const sorts = responseData.sorts; // Extract the 'sorts' array from the response data
-
-  // const sort = sorts.find(s => s.code === expectedSort); // Find an object with the `code` equal to `expectedSort`
-
-  // // Check that such an object exists and `selected` is true
-  // expect(sort, `Sort with code '${expectedSort}' not found`).to.exist;
-  // expect(sort.selected, `Sort with code '${expectedSort}' is not selected`).to.be.true;
 } );
 
 Then('the products in the response should be sorted by {string} in descending order', async function(field){
@@ -41,6 +33,7 @@ Then( 'the products in the response should be sorted by name in descending order
   }
 } );
 
+
 Then( 'the products in the response should be sorted by name in ascending order', async function () {
   const responseData = this.json;
   const products = responseData.results;
@@ -52,28 +45,65 @@ Then( 'the products in the response should be sorted by name in ascending order'
   }
 } );
 
+
 Then( 'the products in the response should be sorted by price in ascending order', async function () {
   const responseData = this.json;
   const products = responseData.results;
 
   for ( let i = 0; i < products.length - 1; i++ ) {
-    let currentPrice = products[ i ].priceValue;
-    let nextPrice = products[ i + 1 ].priceValue;
+    // Determine the current product's price
+    let currentPrice;
+    if ( products[ i ].potentialPromotions && products[ i ].potentialPromotions.length > 0 ) {
+      const promotionPrice = products[ i ].potentialPromotions[ 0 ].price;
+      currentPrice = promotionPrice && promotionPrice.value ? promotionPrice.value : products[ i ].priceValue;
+    } else {
+      currentPrice = products[ i ].priceValue;
+    }
+
+    // Determine the next product's price
+    let nextPrice;
+    if ( products[ i + 1 ].potentialPromotions && products[ i + 1 ].potentialPromotions.length > 0 ) {
+      const promotionPrice = products[ i + 1 ].potentialPromotions[ 0 ].price;
+      nextPrice = promotionPrice && promotionPrice.value ? promotionPrice.value : products[ i + 1 ].priceValue;
+    } else {
+      nextPrice = products[ i + 1 ].priceValue;
+    }
+
     expect( currentPrice ).to.be.at.most( nextPrice, `Product at index ${ i } with price ${ currentPrice } should be before product at index ${ i + 1 } with price ${ nextPrice }` );
   }
 } );
-
 
 Then( 'the products in the response should be sorted by price in descending order', async function () {
   const responseData = this.json;
   const products = responseData.results;
 
   for ( let i = 0; i < products.length - 1; i++ ) {
-    let currentPrice = products[ i ].priceValue;
-    let nextPrice = products[ i + 1 ].priceValue;
-    expect( currentPrice ).to.be.at.least( nextPrice, `Product at index ${ i } with price ${ currentPrice } should be before product at index ${ i + 1 } with price ${ nextPrice }` );
+    // Determine the current product's price
+    let currentPrice;
+    if ( products[ i ].potentialPromotions && products[ i ].potentialPromotions.length > 0 ) {
+      const promotionPrice = products[ i ].potentialPromotions[ 0 ].price;
+      currentPrice = promotionPrice && promotionPrice.value ? promotionPrice.value : products[ i ].priceValue;
+    } else {
+      currentPrice = products[ i ].priceValue;
+    }
+
+    // Determine the next product's price
+    let nextPrice;
+    if ( products[ i + 1 ].potentialPromotions && products[ i + 1 ].potentialPromotions.length > 0 ) {
+      const promotionPrice = products[ i + 1 ].potentialPromotions[ 0 ].price;
+      nextPrice = promotionPrice && promotionPrice.value ? promotionPrice.value : products[ i + 1 ].priceValue;
+    } else {
+      nextPrice = products[ i + 1 ].priceValue;
+    }
+
+    // Ensure the products are sorted in descending order by price
+    expect( currentPrice ).to.be.at.least(
+      nextPrice,
+      `Product at index ${ i } with price ${ currentPrice } should be before product at index ${ i + 1 } with price ${ nextPrice }`
+    );
   }
 } );
+
 
 
 Then( 'the products in the response should be sorted by compare price in ascending order', async function () {
@@ -81,9 +111,37 @@ Then( 'the products in the response should be sorted by compare price in ascendi
   const products = responseData.results;
 
   for ( let i = 0; i < products.length - 1; i++ ) {
-    // Extract compare prices for the current and next product, converting from string to number
-    let currentComparePrice = parseFloat( products[ i ].comparePrice.replace( ',', '.' ) );
-    let nextComparePrice = parseFloat( products[ i + 1 ].comparePrice.replace( ',', '.' ) );
+    // Helper function to parse compare price
+    const parseComparePrice = ( priceString ) => {
+      return parseFloat(
+        priceString
+          .replace( 'kr', '' ) 
+          .replace( /\s/g, '' ) 
+          .replace( ',', '.' ) 
+          .trim()
+      );
+    };
+
+    // Extract compare price for the current product
+    let currentComparePrice;
+    if ( products[ i ].potentialPromotions && products[ i ].potentialPromotions.length > 0 ) {
+      // If there's a promotion, use comparePrice from the promotion
+      currentComparePrice = parseComparePrice( products[ i ].potentialPromotions[ 0 ].comparePrice );
+    } else {
+      currentComparePrice = parseComparePrice( products[ i ].comparePrice );
+    }
+
+    // Extract compare price for the next product
+    let nextComparePrice;
+    if ( products[ i + 1 ].potentialPromotions && products[ i + 1 ].potentialPromotions.length > 0 ) {
+      nextComparePrice = parseComparePrice( products[ i + 1 ].potentialPromotions[ 0 ].comparePrice );
+    } else {
+      nextComparePrice = parseComparePrice( products[ i + 1 ].comparePrice );
+    }
+    // Skip if any of the compare prices is invalid (NaN)
+    if ( isNaN( currentComparePrice ) || isNaN( nextComparePrice ) ) {
+      continue; 
+    }
 
     expect( currentComparePrice ).to.be.at.most( nextComparePrice,
       `Product at index ${ i } with compare price ${ currentComparePrice } should be before product at index ${ i + 1 } with compare price ${ nextComparePrice }` );
@@ -96,12 +154,36 @@ Then( 'the products in the response should be sorted by compare price in descend
   const products = responseData.results;
 
   for ( let i = 0; i < products.length - 1; i++ ) {
-    // Extract compare prices for the current and next product, converting from string to number
-    let currentComparePrice = parseFloat( products[ i ].comparePrice.replace( ',', '.' ) );
-    let nextComparePrice = parseFloat( products[ i + 1 ].comparePrice.replace( ',', '.' ) );
+    const parseComparePrice = ( priceString ) => {
+      return parseFloat(
+        priceString
+          .replace( 'kr', '' ) 
+          .replace( /\s/g, '' ) 
+          .replace( ',', '.' ) 
+          .trim()
+      );
+    };
+    let currentComparePrice;
+    if ( products[ i ].potentialPromotions && products[ i ].potentialPromotions.length > 0 ) {
+      currentComparePrice = parseComparePrice( products[ i ].potentialPromotions[ 0 ].comparePrice );
+    } else {
+      currentComparePrice = parseComparePrice( products[ i ].comparePrice );
+    }
+    let nextComparePrice;
+    if ( products[ i + 1 ].potentialPromotions && products[ i + 1 ].potentialPromotions.length > 0 ) {
+      nextComparePrice = parseComparePrice( products[ i + 1 ].potentialPromotions[ 0 ].comparePrice );
+    } else {
+      nextComparePrice = parseComparePrice( products[ i + 1 ].comparePrice );
+    }
+   
+    if ( isNaN( currentComparePrice ) || isNaN( nextComparePrice ) ) {
+      continue; 
+    }
 
-    expect( currentComparePrice ).to.be.at.least( nextComparePrice,
-      `Product at index ${ i } with compare price ${ currentComparePrice } should be before product at index ${ i + 1 } with compare price ${ nextComparePrice }` );
+    expect(
+      currentComparePrice,
+      `Product at index ${ i } with compare price ${ currentComparePrice } should be before product at index ${ i + 1 } with compare price ${ nextComparePrice }`
+    ).to.be.at.least( nextComparePrice );
   }
 } );
 

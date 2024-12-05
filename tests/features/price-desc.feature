@@ -13,7 +13,7 @@ Feature: Feature: Product Sorting by Price Descending
     And there should be at least 500 subcategories
 
 Scenario Outline: Verify sorting by price descending in multiple categories
-  When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=30&page=0&sort=price-desc"
+  When I visit the endpoint "GET" "/api/c/{categoryUrlPart}?size=100&page=0&sort=price-desc"
   Then the status code of the response should be 200
   And the response time should be below 1000 milliseconds
   And the sort parameter in the response should be "price-desc"
