@@ -482,17 +482,17 @@
 									"});\r",
 									"\r",
 									"// Logic for switching pages and categories\r",
-									"let currentPage = pm.environment.get(\"pageNumber\");\r",
+									"let currentPage = pm.environment.get(\"currentPage\");\r",
 									"let totalPages = responseData.pagination.numberOfPages;\r",
 									"\r",
 									"if (currentPage < totalPages - 1) {\r",
 									"    // If there is a next page, increase pageNumber and go to it\r",
-									"    pm.environment.set(\"pageNumber\", currentPage + 1);\r",
+									"    pm.environment.set(\"currentPage\", currentPage + 1);\r",
 									"    pm.execution.setNextRequest(\"Verify Products Sorted by Top Rated\");\r",
 									"} else {\r",
 									"    // If this is the last page of the current category, reset pageNumber and switch to the next category\r",
 									"    console.log(\"All pages in this category have been processed.\");\r",
-									"    pm.environment.unset(\"pageNumber\"); // Reset page number for the new category\r",
+									"    pm.environment.unset(\"currentPage\"); // Reset page number for the new category\r",
 									"\r",
 									"    // Check if there is a next category\r",
 									"    if (categories.children[categoryCounter + 1]) {\r",
@@ -543,8 +543,8 @@
 									"    console.log('URL Part for current category:', urlCategoryPart);\r",
 									"\r",
 									"    // Initialize pageNumber only once at the beginning of each category\r",
-									"    if (!pm.environment.get(\"pageNumber\")) {\r",
-									"        pm.environment.set(\"pageNumber\", 0);\r",
+									"    if (!pm.environment.get(\"currentPage\")) {\r",
+									"        pm.environment.set(\"currentPage\", 0);\r",
 									"        console.log(\"Page number initialized to 0 for new category.\");\r",
 									"    }\r",
 									"}\r",
@@ -559,7 +559,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=100&page={{pageNumber}}&sort=topRated",
+							"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=100&page={{currentPage}}&sort=topRated",
 							"host": [
 								"{{domain}}"
 							],
@@ -575,7 +575,7 @@
 								},
 								{
 									"key": "page",
-									"value": "{{pageNumber}}"
+									"value": "{{currentPage}}"
 								},
 								{
 									"key": "sort",
@@ -621,8 +621,8 @@
 									"    console.log('URL Part for current category:', urlCategoryPart);\r",
 									"\r",
 									"    // Initialize pageNumber only once at the beginning of each category\r",
-									"    if (!pm.environment.get(\"pageNumber\")) {\r",
-									"        pm.environment.set(\"pageNumber\", 0);\r",
+									"    if (!pm.environment.get(\"currentPage\")) {\r",
+									"        pm.environment.set(\"currentPage\", 0);\r",
 									"        console.log(\"Page number initialized to 0 for new category.\");\r",
 									"    }\r",
 									"}\r",
@@ -657,17 +657,17 @@
 									"});\r",
 									"\r",
 									"// Page and category navigation logic\r",
-									"let currentPage = pm.environment.get(\"pageNumber\");\r",
+									"let currentPage = pm.environment.get(\"currentPage\");\r",
 									"let totalPages = responseData.pagination.numberOfPages;\r",
 									"\r",
 									"if (currentPage < totalPages - 1) {\r",
 									"    // If next page exists, increase pageNumber and set next request to the same category\r",
-									"    pm.environment.set(\"pageNumber\", currentPage + 1);\r",
+									"    pm.environment.set(\"currentPage\", currentPage + 1);\r",
 									"    pm.execution.setNextRequest(\"Verify Products Sorted by Name Ascending\"); // Replace with actual request name\r",
 									"} else {\r",
 									"    // If this is the last page in the category, reset pageNumber and switch to the next category\r",
 									"    console.log(\"All pages in this category have been processed.\");\r",
-									"    pm.environment.unset(\"pageNumber\"); // Reset for the new category\r",
+									"    pm.environment.unset(\"currentPage\"); // Reset for the new category\r",
 									"    \r",
 									"    // Check if there is another category\r",
 									"    if (categories.children[categoryCounter + 1]) {\r",
@@ -691,7 +691,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=100&page={{pageNumber}}&sort=name-asc",
+							"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=100&page={{currentPage}}&sort=name-asc",
 							"host": [
 								"{{domain}}"
 							],
@@ -707,7 +707,7 @@
 								},
 								{
 									"key": "page",
-									"value": "{{pageNumber}}"
+									"value": "{{currentPage}}"
 								},
 								{
 									"key": "sort",
@@ -751,8 +751,8 @@
 									"    console.log('URL Part for current category:', urlCategoryPart);\r",
 									"\r",
 									"    // Initialize pageNumber only once at the beginning of each category\r",
-									"    if (!pm.environment.get(\"pageNumber\")) {\r",
-									"        pm.environment.set(\"pageNumber\", 0);\r",
+									"    if (!pm.environment.get(\"currentPage\")) {\r",
+									"        pm.environment.set(\"currentPage\", 0);\r",
 									"        console.log(\"Page number initialized to 0 for new category.\");\r",
 									"    }\r",
 									"}\r",
@@ -787,17 +787,17 @@
 									"});\r",
 									"\r",
 									"// Page and category navigation logic\r",
-									"let currentPage = pm.environment.get(\"pageNumber\");\r",
+									"let currentPage = pm.environment.get(\"currentPage\");\r",
 									"let totalPages = responseData.pagination.numberOfPages;\r",
 									"\r",
 									"if (currentPage < totalPages - 1) {\r",
 									"    // If next page exists, increase pageNumber and set next request to the same category\r",
-									"    pm.environment.set(\"pageNumber\", currentPage + 1);\r",
+									"    pm.environment.set(\"currentPage\", currentPage + 1);\r",
 									"    pm.execution.setNextRequest(\"Verify Products Sorted by Name Descending\"); // Replace with actual request name\r",
 									"} else {\r",
 									"    // If this is the last page in the category, reset pageNumber and switch to the next category\r",
 									"    console.log(\"All pages in this category have been processed.\");\r",
-									"    pm.environment.unset(\"pageNumber\"); // Reset for the new category\r",
+									"    pm.environment.unset(\"currentPage\"); // Reset for the new category\r",
 									"    \r",
 									"    // Check if there is another category\r",
 									"    if (categories.children[categoryCounter + 1]) {\r",
@@ -821,7 +821,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=100&page={{pageNumber}}&sort=name-desc",
+							"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=100&page={{currentPage}}&sort=name-desc",
 							"host": [
 								"{{domain}}"
 							],
@@ -837,7 +837,7 @@
 								},
 								{
 									"key": "page",
-									"value": "{{pageNumber}}"
+									"value": "{{currentPage}}"
 								},
 								{
 									"key": "sort",
@@ -849,7 +849,297 @@
 					"response": []
 				},
 				{
-					"name": "Verify Products Sorted by Compare Price Ascending Copy",
+					"name": "Verify Products Sorted by Price Ascending",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Retrieve category data from environment variables\r",
+									"let categories = pm.variables.get('categoryData');\r",
+									"\r",
+									"// Check if categoryCounter is initialized in the environment\r",
+									"let categoryCounter = pm.environment.get('categoryCounter');\r",
+									"if (categoryCounter === undefined) {\r",
+									"    categoryCounter = 0; \r",
+									"    pm.environment.set('categoryCounter', categoryCounter); \r",
+									"}\r",
+									"\r",
+									"// Verify that categories and categoryCounter are valid\r",
+									"if (!categories || !categories.children || categories.children.length === 0) {\r",
+									"    console.error('Error: categories data is empty or malformed!');\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (categoryCounter >= categories.children.length) {\r",
+									"    console.log(\"All categories have been processed.\");\r",
+									"    pm.execution.setNextRequest(null);  // End if no more categories\r",
+									"} else {\r",
+									"    // Retrieve the URL part for the current category and set it as an environment variable\r",
+									"    let urlCategoryPart = categories.children[categoryCounter].url;\r",
+									"    pm.environment.set('urlCategoryPart', urlCategoryPart);\r",
+									"    console.log('URL Part for current category:', urlCategoryPart);\r",
+									"\r",
+									"    // Initialize pageNumber only once at the beginning of each category\r",
+									"    if (!pm.environment.get(\"currentPage\")) {\r",
+									"        pm.environment.set(\"currentPage\", 0);\r",
+									"        console.log(\"Page number initialized to 0 for new category.\");\r",
+									"    }\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseData = pm.response.json();\r",
+									"let products = responseData.results;\r",
+									"let categories = pm.variables.get('categoryData');\r",
+									"let categoryCounter = pm.environment.get('categoryCounter');\r",
+									"\r",
+									"// Check that the sort parameter is set to \"price-asc\"\r",
+									"pm.test('Sort parameter should be set to price-asc', () => {\r",
+									"    let selectedSort = responseData.sorts.find(sort => sort.code === 'price-asc');\r",
+									"    pm.expect(selectedSort.selected).to.be.true;\r",
+									"});\r",
+									"\r",
+									"// Check that products are sorted by \"priceValue\" field in ascending order\r",
+									"pm.test('Products should be sorted by price in ascending order (cheapest to most expensive)', () => {\r",
+									"    for ( let i = 0; i < products.length - 1; i++ ) {\r",
+									"    // Determine the current product's price\r",
+									"    let currentPrice;\r",
+									"    if ( products[ i ].potentialPromotions && products[ i ].potentialPromotions.length > 0 ) {\r",
+									"      const promotionPrice = products[ i ].potentialPromotions[ 0 ].price;\r",
+									"      currentPrice = promotionPrice && promotionPrice.value ? promotionPrice.value : products[ i ].priceValue;\r",
+									"    } else {\r",
+									"      currentPrice = products[ i ].priceValue;\r",
+									"    }\r",
+									"\r",
+									"    // Determine the next product's price\r",
+									"    let nextPrice;\r",
+									"    if ( products[ i + 1 ].potentialPromotions && products[ i + 1 ].potentialPromotions.length > 0 ) {\r",
+									"      const promotionPrice = products[ i + 1 ].potentialPromotions[ 0 ].price;\r",
+									"      nextPrice = promotionPrice && promotionPrice.value ? promotionPrice.value : products[ i + 1 ].priceValue;\r",
+									"    } else {\r",
+									"      nextPrice = products[ i + 1 ].priceValue;\r",
+									"    }\r",
+									"        pm.expect(currentPrice).to.be.at.most(nextPrice, `Product at index ${i} with price ${currentPrice} should be before product at index ${i + 1} with price ${nextPrice}`);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// Page and category navigation logic\r",
+									"let currentPage = pm.environment.get(\"currentPage\");\r",
+									"let totalPages = responseData.pagination.numberOfPages;\r",
+									"\r",
+									"if (currentPage < totalPages - 1) {\r",
+									"    // If next page exists, increase pageNumber and set next request to the same category\r",
+									"    pm.environment.set(\"currentPage\", currentPage + 1);\r",
+									"    pm.execution.setNextRequest(\"Verify Products Sorted by Price Ascending\"); // Replace with actual request name\r",
+									"} else {\r",
+									"    // If this is the last page in the category, reset pageNumber and switch to the next category\r",
+									"    console.log(\"All pages in this category have been processed.\");\r",
+									"    pm.environment.unset(\"currentPage\"); // Reset for the new category\r",
+									"    \r",
+									"    // Check if there is another category\r",
+									"    if (categories.children[categoryCounter + 1]) {\r",
+									"        console.log(\"Switching to the next category...\");\r",
+									"        pm.environment.set('categoryCounter', categoryCounter + 1); // Increment categoryCounter\r",
+									"        pm.execution.setNextRequest('Verify Products Sorted by Price Ascending');  // Set to the next category request\r",
+									"    } else {\r",
+									"        // If no more categories, end the test\r",
+									"        console.log(\"All categories have been processed.\");\r",
+									"         pm.environment.unset('categoryCounter');\r",
+									"    }\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=100&page={{currentPage}}&sort=price-asc",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"c",
+								"{{urlCategoryPart}}"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "100"
+								},
+								{
+									"key": "page",
+									"value": "{{currentPage}}"
+								},
+								{
+									"key": "sort",
+									"value": "price-asc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Products Sorted by Price Descending",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Retrieve category data from environment variables\r",
+									"let categories = pm.variables.get('categoryData');\r",
+									"\r",
+									"// Check if categoryCounter is initialized in the environment\r",
+									"let categoryCounter = pm.environment.get('categoryCounter');\r",
+									"if (categoryCounter === undefined) {\r",
+									"    categoryCounter = 0; \r",
+									"    pm.environment.set('categoryCounter', categoryCounter); \r",
+									"}\r",
+									"\r",
+									"// Verify that categories and categoryCounter are valid\r",
+									"if (!categories || !categories.children || categories.children.length === 0) {\r",
+									"    console.error('Error: categories data is empty or malformed!');\r",
+									"    return;\r",
+									"}\r",
+									"\r",
+									"if (categoryCounter >= categories.children.length) {\r",
+									"    console.log(\"All categories have been processed.\");\r",
+									"    pm.execution.setNextRequest(null);  // End if no more categories\r",
+									"} else {\r",
+									"    // Retrieve the URL part for the current category and set it as an environment variable\r",
+									"    let urlCategoryPart = categories.children[categoryCounter].url;\r",
+									"    pm.environment.set('urlCategoryPart', urlCategoryPart);\r",
+									"    console.log('URL Part for current category:', urlCategoryPart);\r",
+									"\r",
+									"    // Initialize pageNumber only once at the beginning of each category\r",
+									"    if (!pm.environment.get(\"currentPage\")) {\r",
+									"        pm.environment.set(\"currentPage\", 0);\r",
+									"        console.log(\"Page number initialized to 0 for new category.\");\r",
+									"    }\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseData = pm.response.json();\r",
+									"let products = responseData.results;\r",
+									"let categories = pm.variables.get('categoryData');\r",
+									"let categoryCounter = pm.environment.get('categoryCounter');\r",
+									"\r",
+									"// Check that the sort parameter is set to \"price-desc\"\r",
+									"pm.test('Sort parameter should be set to price-desc', () => {\r",
+									"    let selectedSort = responseData.sorts.find(sort => sort.code === 'price-desc');\r",
+									"    pm.expect(selectedSort.selected).to.be.true;\r",
+									"});\r",
+									"\r",
+									"// Check that products are sorted by \"priceValue\" field in descending order\r",
+									"pm.test('Products should be sorted by price in descending order (most expensive to cheapest)', () => {\r",
+									"    for ( let i = 0; i < products.length - 1; i++ ) {\r",
+									"    // Determine the current product's price\r",
+									"    let currentPrice;\r",
+									"    if ( products[ i ].potentialPromotions && products[ i ].potentialPromotions.length > 0 ) {\r",
+									"      const promotionPrice = products[ i ].potentialPromotions[ 0 ].price;\r",
+									"      currentPrice = promotionPrice && promotionPrice.value ? promotionPrice.value : products[ i ].priceValue;\r",
+									"    } else {\r",
+									"      currentPrice = products[ i ].priceValue;\r",
+									"    }\r",
+									"\r",
+									"    // Determine the next product's price\r",
+									"    let nextPrice;\r",
+									"    if ( products[ i + 1 ].potentialPromotions && products[ i + 1 ].potentialPromotions.length > 0 ) {\r",
+									"      const promotionPrice = products[ i + 1 ].potentialPromotions[ 0 ].price;\r",
+									"      nextPrice = promotionPrice && promotionPrice.value ? promotionPrice.value : products[ i + 1 ].priceValue;\r",
+									"    } else {\r",
+									"      nextPrice = products[ i + 1 ].priceValue;\r",
+									"    }\r",
+									"        pm.expect(currentPrice).to.be.at.least(nextPrice, `Product at index ${i} with price ${currentPrice} should be before product at index ${i + 1} with price ${nextPrice}`);\r",
+									"    }\r",
+									"});\r",
+									"\r",
+									"// Page and category navigation logic\r",
+									"let currentPage = pm.environment.get(\"currentPage\");\r",
+									"let totalPages = responseData.pagination.numberOfPages;\r",
+									"\r",
+									"if (currentPage < totalPages - 1) {\r",
+									"    // If next page exists, increase pageNumber and set next request to the same category\r",
+									"    pm.environment.set(\"currentPage\", currentPage + 1);\r",
+									"    pm.execution.setNextRequest(\"Verify Products Sorted by Price Descending\"); // Replace with actual request name\r",
+									"} else {\r",
+									"    // If this is the last page in the category, reset pageNumber and switch to the next category\r",
+									"    console.log(\"All pages in this category have been processed.\");\r",
+									"    pm.environment.unset(\"currentPage\"); // Reset for the new category\r",
+									"    \r",
+									"    // Check if there is another category\r",
+									"    if (categories.children[categoryCounter + 1]) {\r",
+									"        console.log(\"Switching to the next category...\");\r",
+									"        pm.environment.set('categoryCounter', categoryCounter + 1); // Increment categoryCounter\r",
+									"        pm.execution.setNextRequest('Verify Products Sorted by Price Descending');  // Set to the next category request\r",
+									"    } else {\r",
+									"        // If no more categories, end the test\r",
+									"        console.log(\"All categories have been processed.\");\r",
+									"        pm.environment.unset('categoryCounter');\r",
+									"    }\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=100&page={{currentPage}}&sort=price-desc",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"c",
+								"{{urlCategoryPart}}"
+							],
+							"query": [
+								{
+									"key": "size",
+									"value": "100"
+								},
+								{
+									"key": "page",
+									"value": "{{currentPage}}"
+								},
+								{
+									"key": "sort",
+									"value": "price-desc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Products Sorted by Compare Price Ascending",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -1010,7 +1300,7 @@
 					"response": []
 				},
 				{
-					"name": "Verify Products Sorted by Compare Price Descending Copy",
+					"name": "Verify Products Sorted by Compare Price Descending",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -1164,159 +1454,6 @@
 								{
 									"key": "sort",
 									"value": "compareprice-desc"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Verify Products Sorted by Price Ascending Copy",
-					"request": {
-						"method": "GET",
-						"header": []
-					},
-					"response": []
-				},
-				{
-					"name": "Verify Products Sorted by Price Descending Copy",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"// Retrieve category data from environment variables\r",
-									"let categories = pm.variables.get('categoryData');\r",
-									"\r",
-									"// Check if categoryCounter is initialized in the environment\r",
-									"let categoryCounter = pm.environment.get('categoryCounter');\r",
-									"if (categoryCounter === undefined) {\r",
-									"    categoryCounter = 0; \r",
-									"    pm.environment.set('categoryCounter', categoryCounter); \r",
-									"}\r",
-									"\r",
-									"// Verify that categories and categoryCounter are valid\r",
-									"if (!categories || !categories.children || categories.children.length === 0) {\r",
-									"    console.error('Error: categories data is empty or malformed!');\r",
-									"    return;\r",
-									"}\r",
-									"\r",
-									"if (categoryCounter >= categories.children.length) {\r",
-									"    console.log(\"All categories have been processed.\");\r",
-									"    pm.execution.setNextRequest(null);  // End if no more categories\r",
-									"} else {\r",
-									"    // Retrieve the URL part for the current category and set it as an environment variable\r",
-									"    let urlCategoryPart = categories.children[categoryCounter].url;\r",
-									"    pm.environment.set('urlCategoryPart', urlCategoryPart);\r",
-									"    console.log('URL Part for current category:', urlCategoryPart);\r",
-									"\r",
-									"    // Initialize pageNumber only once at the beginning of each category\r",
-									"    if (!pm.environment.get(\"currentPage\")) {\r",
-									"        pm.environment.set(\"currentPage\", 0);\r",
-									"        console.log(\"Page number initialized to 0 for new category.\");\r",
-									"    }\r",
-									"}\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"let responseData = pm.response.json();\r",
-									"let products = responseData.results;\r",
-									"let categories = pm.variables.get('categoryData');\r",
-									"let categoryCounter = pm.environment.get('categoryCounter');\r",
-									"\r",
-									"// Check that the sort parameter is set to \"price-desc\"\r",
-									"pm.test('Sort parameter should be set to price-desc', () => {\r",
-									"    let selectedSort = responseData.sorts.find(sort => sort.code === 'price-desc');\r",
-									"    pm.expect(selectedSort.selected).to.be.true;\r",
-									"});\r",
-									"\r",
-									"// Check that products are sorted by \"priceValue\" field in descending order\r",
-									"pm.test('Products should be sorted by price in descending order (most expensive to cheapest)', () => {\r",
-									"    for ( let i = 0; i < products.length - 1; i++ ) {\r",
-									"    // Determine the current product's price\r",
-									"    let currentPrice;\r",
-									"    if ( products[ i ].potentialPromotions && products[ i ].potentialPromotions.length > 0 ) {\r",
-									"      const promotionPrice = products[ i ].potentialPromotions[ 0 ].price;\r",
-									"      currentPrice = promotionPrice && promotionPrice.value ? promotionPrice.value : products[ i ].priceValue;\r",
-									"    } else {\r",
-									"      currentPrice = products[ i ].priceValue;\r",
-									"    }\r",
-									"\r",
-									"    // Determine the next product's price\r",
-									"    let nextPrice;\r",
-									"    if ( products[ i + 1 ].potentialPromotions && products[ i + 1 ].potentialPromotions.length > 0 ) {\r",
-									"      const promotionPrice = products[ i + 1 ].potentialPromotions[ 0 ].price;\r",
-									"      nextPrice = promotionPrice && promotionPrice.value ? promotionPrice.value : products[ i + 1 ].priceValue;\r",
-									"    } else {\r",
-									"      nextPrice = products[ i + 1 ].priceValue;\r",
-									"    }\r",
-									"        pm.expect(currentPrice).to.be.at.least(nextPrice, `Product at index ${i} with price ${currentPrice} should be before product at index ${i + 1} with price ${nextPrice}`);\r",
-									"    }\r",
-									"});\r",
-									"\r",
-									"// Page and category navigation logic\r",
-									"let currentPage = pm.environment.get(\"currentPage\");\r",
-									"let totalPages = responseData.pagination.numberOfPages;\r",
-									"\r",
-									"if (currentPage < totalPages - 1) {\r",
-									"    // If next page exists, increase pageNumber and set next request to the same category\r",
-									"    pm.environment.set(\"currentPage\", currentPage + 1);\r",
-									"    pm.execution.setNextRequest(\"Verify Products Sorted by Price Descending\"); // Replace with actual request name\r",
-									"} else {\r",
-									"    // If this is the last page in the category, reset pageNumber and switch to the next category\r",
-									"    console.log(\"All pages in this category have been processed.\");\r",
-									"    pm.environment.unset(\"currentPage\"); // Reset for the new category\r",
-									"    \r",
-									"    // Check if there is another category\r",
-									"    if (categories.children[categoryCounter + 1]) {\r",
-									"        console.log(\"Switching to the next category...\");\r",
-									"        pm.environment.set('categoryCounter', categoryCounter + 1); // Increment categoryCounter\r",
-									"        pm.execution.setNextRequest('Verify Products Sorted by Price Descending');  // Set to the next category request\r",
-									"    } else {\r",
-									"        // If no more categories, end the test\r",
-									"        console.log(\"All categories have been processed.\");\r",
-									"        pm.environment.unset('categoryCounter');\r",
-									"    }\r",
-									"}\r",
-									""
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{domain}}/api/c/{{urlCategoryPart}}?size=100&page={{currentPage}}&sort=price-desc",
-							"host": [
-								"{{domain}}"
-							],
-							"path": [
-								"api",
-								"c",
-								"{{urlCategoryPart}}"
-							],
-							"query": [
-								{
-									"key": "size",
-									"value": "100"
-								},
-								{
-									"key": "page",
-									"value": "{{currentPage}}"
-								},
-								{
-									"key": "sort",
-									"value": "price-desc"
 								}
 							]
 						}
