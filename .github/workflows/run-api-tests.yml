@@ -24,10 +24,10 @@ jobs:
           - Sorting_Top_Rated
           - Sorting_Name_asc
           - Sorting_Name_desc
-          # - Sorting_Price_asc
-          # - Sorting_Price_desc
-          # - Sorting_Compare_Price_asc
-          # - Sorting_Compare_Price_desc
+          - Sorting_Price_asc
+          - Sorting_Price_desc
+          - Sorting_Compare_Price_asc
+          - Sorting_Compare_Price_desc
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
